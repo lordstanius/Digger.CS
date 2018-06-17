@@ -178,9 +178,6 @@ namespace Digger
             Scores.LoadScores();
             Sound.initsound();
 
-            Scores.Run(); // TODO: ??
-            Scores.UpdateScores(Scores.scores);
-
             playerCount = 1;
             do
             {

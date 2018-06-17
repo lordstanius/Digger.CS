@@ -2,6 +2,9 @@
 {
     public static class Level
     {
+        public static string LevelFileName;
+        public static bool IsUsingLevelFile;
+
         public static string[,] Data = {
             {"S   B     HHHHS",
             "V  CC  C  V B  ",

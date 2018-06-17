@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -6,40 +7,22 @@ namespace Digger
     public class Scores
     {
         private readonly Game game;
-        public object[][] scores;
-        public int bonusscore = 20000;
 
-        private readonly char[] highbuf = new char[10];
+        public int bonusscore = 20000;
+        public int scoret = 0;
+
         private readonly int[] scorehigh = new int[12];
         private readonly string[] scoreinit = new string[11];
-        private readonly char[] scorebuf = new char[512];
-        private int scoret = 0, score1 = 0, score2 = 0, nextbs1 = 0, nextbs2 = 0;
+        private readonly byte[] scorebuf = new byte[512];
+        private int score1 = 0, score2 = 0, nextbs1 = 0, nextbs2 = 0;
+        private string highbuf;
         private string hsbuf;
         private bool gotinitflag = false;
+        public const string SCORE_FILE_NAME = "DIGGER.SCO";
 
         public Scores(Game game)
         {
             this.game = game;
-        }
-
-        public void UpdateScores(object[][] o)
-        {
-            // TODO: implement
-            if (o == null)
-                return;
-
-            string[] @in = new string[10];
-            int[] sc = new int[10];
-            for (int i = 0; i < 10; i++)
-            {
-                @in[i] = (string)o[i][0];
-                sc[i] = (int)o[i][1];
-            }
-            for (int i = 0; i < 10; i++)
-            {
-                scoreinit[i + 1] = @in[i];
-                scorehigh[i + 2] = sc[i];
-            }
         }
 
         public void AddScore(int score)
@@ -239,52 +222,61 @@ namespace Digger
 
         public void LoadScores()
         {
-            int p = 1, i, x;
-            //readscores();
-            for (i = 1; i < 11; i++)
+            int p = 0;
+            ReadScores();
+            //if (game.isGauntletMode)
+            //    p = 111;
+            //if (game.diggerCount == 2)
+            //    p += 222;
+            if (scorebuf[p++] != 's')
             {
-                for (x = 0; x < 3; x++)
-                    scoreinit[i] = "..."; //  scorebuf[p++];	--- zmienic
-                p += 2;
-                for (x = 0; x < 6; x++)
-                    highbuf[x] = scorebuf[p++];
-                scorehigh[i + 1] = 0; //atol(highbuf);
-            }
-            if (scorebuf[0] != 's')
-                for (i = 0; i < 11; i++)
+                for (int i = 0; i < 11; i++)
                 {
                     scorehigh[i + 1] = 0;
                     scoreinit[i] = "...";
                 }
+            }
+            else
+            {
+                for (int i = 1; i < 11; i++)
+                {
+                    scoreinit[i] = Encoding.ASCII.GetString(scorebuf, p, 3);
+                    p += 5;
+                    highbuf = Encoding.ASCII.GetString(scorebuf, p, 6);
+                    if (int.TryParse(highbuf.TrimEnd(), out int highScore))
+                        scorehigh[i + 1] = highScore;
+                    p += 6;
+                }
+            }
+        }
+
+        private void ReadScores()
+        {
+            if (!Level.IsUsingLevelFile)
+            {
+                if (File.Exists(SCORE_FILE_NAME))
+                {
+                    using (var inFile = File.OpenRead(SCORE_FILE_NAME))
+                    {
+                        if (inFile.Read(scorebuf, 0, 512) == 0)
+                            scorebuf[0] = 0;
+                    }
+                }
+            }
+            else
+            {
+                using (var inFile = File.OpenRead(Level.LevelFileName))
+                {
+                    inFile.Seek(1202, SeekOrigin.Begin);
+                    if (inFile.Read(scorebuf, 0, 512) == 0)
+                        scorebuf[0] = 0;
+                }
+            }
         }
 
         public string NumToString(long n)
         {
             return string.Format("{0,-6:d}", n);
-        }
-
-        public void Run()
-        {
-            // TODO: ???
-            //try
-            //{
-            //    URL u = new URL(game.subaddr + '?' + substr);
-            //    URLConnection uc = u.openConnection();
-            //    uc.setUseCaches(false);
-            //    uc.connect();
-            //    BufferedReader br = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-            //    object[][] sc = new object[10][2];
-            //    for (int i = 0; i < 10; i++)
-            //    {
-            //        sc[i][0] = br.readLine();
-            //        sc[i][1] = new Integer(br.readLine());
-            //    }
-            //    br.close();
-            //    scores = sc;
-            //}
-            //catch (Exception e)
-            //{
-            //}
         }
 
         public void ScoreBonus()
