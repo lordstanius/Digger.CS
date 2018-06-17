@@ -6,6 +6,8 @@ namespace Digger
 {
     public class Scores
     {
+        public const string SCORE_FILE_NAME = "DIGGER.SCO";
+
         private readonly Game game;
 
         public int bonusscore = 20000;
@@ -15,10 +17,7 @@ namespace Digger
         private readonly string[] scoreinit = new string[11];
         private readonly byte[] scorebuf = new byte[512];
         private int score1 = 0, score2 = 0, nextbs1 = 0, nextbs2 = 0;
-        private string highbuf;
-        private string hsbuf;
         private bool gotinitflag = false;
-        public const string SCORE_FILE_NAME = "DIGGER.SCO";
 
         public Scores(Game game)
         {
@@ -97,14 +96,13 @@ namespace Digger
                 game.Drawing.TextOut(" NEW HIGH SCORE ", 64, 40, 2, true);
                 GetInitials();
                 ShuffleHigh();
-                //	savescores();
+                SaveScores();
                 game.start = false;
             }
             else
             {
                 game.ClearTopLine();
                 game.Drawing.TextOut("GAME OVER", 104, 0, 3, true);
-                // TODO: _updatescores(_submit("...", (int)scoret));
                 game.Sound.killsound();
                 for (int j = 0; j < 20; j++) /* Number of times screen flashes * 2 */
                     for (int i = 0; i < 2; i++)
@@ -125,16 +123,6 @@ namespace Digger
 
         public void FlashyWait(int n)
         {
-            /*  int i,gt,cx,p=0,k=1;
-              int gap=19;
-              game.Sprite.setretr(false);
-              for (i=0;i<(n<<1);i++) {
-                for (cx=0;cx<game.Sound.volume;cx++) {
-                  game.Pc.gpal(p=1-p);
-                  for (gt=0;gt<gap;gt++);
-                }
-                } */
-
             Thread.Sleep(n * 2);
         }
 
@@ -242,8 +230,8 @@ namespace Digger
                 {
                     scoreinit[i] = Encoding.ASCII.GetString(scorebuf, p, 3);
                     p += 5;
-                    highbuf = Encoding.ASCII.GetString(scorebuf, p, 6);
-                    if (int.TryParse(highbuf.TrimEnd(), out int highScore))
+                    string highbuf = Encoding.ASCII.GetString(scorebuf, p, 6).TrimEnd();
+                    if (int.TryParse(highbuf, out int highScore))
                         scorehigh[i + 1] = highScore;
                     p += 6;
                 }
@@ -274,9 +262,45 @@ namespace Digger
             }
         }
 
+        private void SaveScores()
+        {
+            int p = 0;
+            //if (game.isGauntletMode)
+            //    p = 111;
+            //if (game.diggerCount == 2)
+            //    p += 222;
+            scorebuf[p] = (byte)'s';
+            for (int i = 1; i < 11; i++)
+            {
+                string hsbuf = $"{scoreinit[i]}  {NumToString(scorehigh[i + 1])}";
+                for (int j = 0; j < 11; j++)
+                    scorebuf[p + j + i * 11 - 10] = (byte)hsbuf[j];
+            }
+            WriteScores();
+        }
+
         public string NumToString(long n)
         {
             return string.Format("{0,-6:d}", n);
+        }
+
+        private void WriteScores()
+        {
+            if (!Level.IsUsingLevelFile)
+            {
+                using (var inFile = File.OpenWrite(SCORE_FILE_NAME))
+                {
+                    inFile.Write(scorebuf, 0, 512);
+                }
+            }
+            else
+            {
+                using (var inFile = File.OpenWrite(Level.LevelFileName))
+                {
+                    inFile.Seek(1202, SeekOrigin.Begin);
+                    inFile.Write(scorebuf, 0, 512);
+                }
+            }
         }
 
         public void ScoreBonus()
@@ -317,7 +341,7 @@ namespace Digger
             col = 2;
             for (i = 1; i < 11; i++)
             {
-                hsbuf = scoreinit[i] + "  " + NumToString(scorehigh[i + 1]);
+                string hsbuf = $"{scoreinit[i]}  {NumToString(scorehigh[i + 1])}";
                 game.Drawing.TextOut(hsbuf, 16, 31 + 13 * i, col);
                 col = 1;
             }

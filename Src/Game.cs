@@ -206,65 +206,84 @@ namespace Digger
                     if (frame == 0)
                         for (t = 54; t < 174; t += 12)
                             Drawing.TextOut("            ", 164, t, 0);
+
                     if (frame == 50)
                     {
                         Sprite.MoveDrawSprite(8, 292, 63);
                         x = 292;
                     }
+
                     if (frame > 50 && frame <= 77)
                     {
                         x -= 4;
                         Drawing.DrawMonster(0, true, 4, x, 63);
                     }
+
                     if (frame > 77)
                         Drawing.DrawMonster(0, true, 0, 184, 63);
+
                     if (frame == 83)
                         Drawing.TextOut("NOBBIN", 216, 64, 2);
+
                     if (frame == 90)
                     {
                         Sprite.MoveDrawSprite(9, 292, 82);
                         Drawing.DrawMonster(1, false, 4, 292, 82);
                         x = 292;
                     }
+
                     if (frame > 90 && frame <= 117)
                     {
                         x -= 4;
                         Drawing.DrawMonster(1, false, 4, x, 82);
                     }
+
                     if (frame > 117)
                         Drawing.DrawMonster(1, false, 0, 184, 82);
+
                     if (frame == 123)
                         Drawing.TextOut("HOBBIN", 216, 83, 2);
+
                     if (frame == 130)
                     {
                         Sprite.MoveDrawSprite(0, 292, 101);
                         Drawing.DrawDigger(4, 292, 101, true);
                         x = 292;
                     }
+
                     if (frame > 130 && frame <= 157)
                     {
                         x -= 4;
                         Drawing.DrawDigger(4, x, 101, true);
                     }
+
                     if (frame > 157)
                         Drawing.DrawDigger(0, 184, 101, true);
+
                     if (frame == 163)
                         Drawing.TextOut("DIGGER", 216, 102, 2);
+
                     if (frame == 178)
                     {
                         Sprite.MoveDrawSprite(1, 184, 120);
                         Drawing.DrawGold(1, 0, 184, 120);
                     }
+
                     if (frame == 183)
                         Drawing.TextOut("GOLD", 216, 121, 2);
+
                     if (frame == 198)
                         Drawing.DrawEmerald(184, 141);
+
                     if (frame == 203)
                         Drawing.TextOut("EMERALD", 216, 140, 2);
+
                     if (frame == 218)
                         Drawing.DrawBonus(184, 158);
+
                     if (frame == 223)
                         Drawing.TextOut("BONUS", 216, 159, 2);
+
                     NewFrame();
                     frame++;
                     if (frame > 250)
@@ -280,6 +299,7 @@ namespace Digger
                 }
                 else
                     gamedat[1].lives = 0;
+
                 Video.Clear();
                 curplayer = 0;
                 InitLevel();
