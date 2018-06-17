@@ -16,12 +16,12 @@ namespace Digger
         private const string REC_FILE_NAME = "DiggerRecord";
         private const string REC_FILE_EXT = ".drf";
 
-        public bool IsPlaying;
-        public bool SaveDrf;
-        public bool GotName;
-        public bool GotGame;
-        public bool IsDrfValid;
-        public bool Kludge;
+        public bool isPlaying;
+        public bool saveDrf;
+        public bool gotName;
+        public bool gotGame;
+        public bool isDrfValid;
+        public bool kludge;
 
         private int recordCharCount;
         private int recordRunLenght;
@@ -72,7 +72,7 @@ namespace Digger
                     throw new InvalidOperationException("No content.");
 
                 if (int.Parse(buf.Substring(7)) <= 19981125)
-                    Kludge = true;
+                    kludge = true;
 
                 /* Get mode */
                 if ((buf = playf.ReadLine()) == null)
@@ -135,14 +135,14 @@ namespace Digger
                 playBuffer = new string(playf.ReadToEnd().Where(c => c >= ' ').ToArray());
             }
 
-            IsPlaying = true;
-            //StartRecording();
+            isPlaying = true;
+            StartRecording();
             //game.Run();
 
             // restore current values
             //game.isGauntletMode = origg;
             //gameTime = origgtime;
-            Kludge = false;
+            kludge = false;
             //game.startingLevel = origstartlev;
             //game.diggerCount = origdiggers;
             //game.playerCount = orignplayers;
@@ -262,10 +262,10 @@ namespace Digger
         public void StartRecording()
         {
             recordingBuffer.Clear();
-            IsDrfValid = true;
+            isDrfValid = true;
 
             recordingBuffer.AppendLine("DRF"); /* Required at start of DRF */
-            if (Kludge)
+            if (kludge)
                 recordingBuffer.AppendLine("AJ DOS 19981125");
             else
                 recordingBuffer.AppendLine("MS WIN 20180611");
@@ -287,8 +287,8 @@ namespace Digger
 
             /*  if (unlimlives)
                 mprintf("U"); */
-            //if (game.startingLevel > 1)
-            //    recordingBuffer.AppendFormat("I{0}", game.startingLevel);
+            if (game.startingLevel > 1)
+                recordingBuffer.AppendFormat("I{0}", game.startingLevel);
 
             recordingBuffer.AppendFormat("\n{0}\n", game.Scores.bonusscore);
             for (int lvl = 0; lvl < 8; lvl++)
@@ -311,34 +311,34 @@ namespace Digger
             recordCharCount = recordRunLenght = 0;
         }
 
-        public void SaveRecordFile()
+        public void SaveRecordFile(string fileName)
         {
-            if (!IsDrfValid)
+            if (!isDrfValid)
                 return;
 
             FileStream recf = null;
             try
             {
-                if (GotName)
+                if (gotName)
                 {
                     try { recf = File.OpenWrite(recordName); }
-                    catch { GotName = false; }
+                    catch { gotName = false; }
                 }
 
-                if (!GotName)
+                if (!gotName)
                 {
                     if (game.playerCount == 2)
                         recf = File.OpenWrite(REC_FILE_NAME); /* Should get a name, really */
                     else
                     {
                         char[] initials = new char[4];
-                        for (int j = 0; j < 3; j++)
-                        {
-                            //initials[j] = game.Scores.scores[0][j];
-                            if (!((initials[j] >= 'A' && initials[j] <= 'Z') ||
-                                  (initials[j] >= 'a' && initials[j] <= 'z')))
-                                initials[j] = '_';
-                        }
+                        //for (int j = 0; j < 3; j++)
+                        //{
+                        //    initials[j] = game.Scores.scores[0][j];
+                        //    if (!((initials[j] >= 'A' && initials[j] <= 'Z') ||
+                        //          (initials[j] >= 'a' && initials[j] <= 'z')))
+                        //        initials[j] = '_';
+                        //}
 
                         //string fileName;
                         //if (game.Scores.scoret < 100000)
@@ -413,7 +413,7 @@ namespace Digger
 
         public void SetRecordName(string name)
         {
-            GotName = true;
+            gotName = true;
             if (!Path.HasExtension(name))
                 name += REC_FILE_EXT;
 

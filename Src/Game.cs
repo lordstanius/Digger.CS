@@ -27,13 +27,13 @@ namespace Digger
         public Drawing Drawing;
         public Input Input;
         public Video Video;
-        public Recorder Recording;
+        public Recorder Recorder;
         public ITimer Timer;
-        // -----
 
         public string pldispbuf = "";
         public int curplayer = 0, playerCount = 0, penalty = 0;
-        public int fps = 13;
+        public int fps = 20;
+        public int startingLevel = 1;
         public bool levnotdrawn, flashplayer, start;
 
         private int randv;
@@ -49,7 +49,7 @@ namespace Digger
             Drawing = new Drawing(this);
             Input = new Input(this);
             Video = new Video();
-            Recording = new Recorder(this);
+            Recorder = new Recorder(this);
             Timer = timer;
         }
 
@@ -315,22 +315,25 @@ namespace Digger
                 }
                 Input.escape = false;
             } while (true);
-            /*  Sound.soundoff();
-            restoreint8();
-            restorekeyb();
-            graphicsoff(); */
+
             Exit();
+        }
+
+        public void PlayRecordFile(string fileName)
+        {
+            Recorder.OpenPlay(fileName);
+            start = true;
         }
 
         private void Play()
         {
             int t, c;
-            if (Recording.IsPlaying)
-                randv = Recording.PlayGetRand();
+            if (Recorder.isPlaying)
+                randv = Recorder.PlayGetRand();
             else
                 randv = Timer.Time;
 
-            Recording.PutRandom(randv);
+            Recorder.PutRandom(randv);
 
             if (levnotdrawn)
             {
@@ -411,8 +414,8 @@ namespace Digger
             Monster.EraseMonsters();
 
             //Recording.PutEndOfLevel();
-            if (Recording.IsPlaying)
-                Recording.PlaySkipEOL();
+            if (Recorder.isPlaying)
+                Recorder.PlaySkipEOL();
 
             NewFrame();
             if (gamedat[curplayer].levdone)
@@ -516,8 +519,7 @@ namespace Digger
             {
                 try
                 {
-                    Recording.OpenPlay(parser.GetString('p'));
-                    start = true;
+                    Recorder.OpenPlay(parser.GetString('p'));
                 }
                 catch { Input.escape = true; }
             }

@@ -1,9 +1,11 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace Digger.Win32
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             var game = new Game(new Timer());

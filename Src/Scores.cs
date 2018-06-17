@@ -96,7 +96,6 @@ namespace Digger
 
         public void EndOfGame()
         {
-            int i, j, z;
             AddScore(0);
             if (game.GetCurrentPlayer() == 0)
                 scoret = score1;
@@ -116,6 +115,7 @@ namespace Digger
                 GetInitials();
                 ShuffleHigh();
                 //	savescores();
+                game.start = false;
             }
             else
             {
@@ -123,13 +123,13 @@ namespace Digger
                 game.Drawing.TextOut("GAME OVER", 104, 0, 3, true);
                 // TODO: _updatescores(_submit("...", (int)scoret));
                 game.Sound.killsound();
-                for (j = 0; j < 20; j++) /* Number of times screen flashes * 2 */
-                    for (i = 0; i < 2; i++)
+                for (int j = 0; j < 20; j++) /* Number of times screen flashes * 2 */
+                    for (int i = 0; i < 2; i++)
                     { //i<8;i++) {
                         game.Sprite.SetRetr(true);
                         //		game.Pc.ginten(1);
                         game.Sprite.SetRetr(false);
-                        for (z = 0; z < 111; z++) ; /* A delay loop */
+                        for (int z = 0; z < 111; z++) ; /* A delay loop */
                         //		game.Pc.ginten(0);
                         game.Video.SetIntensity(1 - i & 1);
                         game.NewFrame();
@@ -157,19 +157,19 @@ namespace Digger
 
         public int GetInitial(int x, int y)
         {
-            int i, j;
             game.Input.keyPressed = 0;
             game.Video.Write(x, y, '_', 3, true);
             game.NewFrame();
-            for (j = 0; j < 5; j++)
+            for (int j = 0; j < 5; j++)
             {
-                for (i = 0; i < 40; i++)
+                for (int i = 0; i < 40; i++)
                 {
                     if ((game.Input.keyPressed & 0x80) == 0 && game.Input.keyPressed != 0)
                         return game.Input.keyPressed;
                     FlashyWait(15);
                 }
-                for (i = 0; i < 40; i++)
+
+                for (int i = 0; i < 40; i++)
                 {
                     if ((game.Input.keyPressed & 0x80) == 0 && game.Input.keyPressed != 0)
                     {
@@ -191,6 +191,17 @@ namespace Digger
             game.Drawing.TextOut("_ _ _", 128, 130, 3, true);
             scoreinit[0] = "...";
             game.Sound.killsound();
+
+            for (int j = 0, i = 0; j < 20; j++) /* Number of times screen flashes * 2 */
+            {
+                for (int z = 0; z < 111; z++)
+                {
+                    /* A delay loop */
+                }
+                game.Video.SetIntensity(i = 1 - i & 1);
+                game.NewFrame();
+            }
+
             gotinitflag = false;
             for (int i = 0; i < 3; i++)
             {

@@ -84,17 +84,17 @@ namespace Digger
             int dir = ((n == 0) ? keydir : keydir2);
             if (n == 0)
             {
-                if (game.Recording.IsPlaying)
-                    game.Recording.PlayGetDirection(ref dir, ref firepflag);
+                if (game.Recorder.isPlaying)
+                    game.Recorder.PlayGetDirection(ref dir, ref firepflag);
 
-                game.Recording.PutDirection(dir, firepflag);
+                game.Recorder.PutDirection(dir, firepflag);
             }
             else
             {
-                if (game.Recording.IsPlaying)
-                    game.Recording.PlayGetDirection(ref dir, ref fire2pflag);
+                if (game.Recorder.isPlaying)
+                    game.Recorder.PlayGetDirection(ref dir, ref fire2pflag);
 
-                game.Recording.PutDirection(dir, fire2pflag);
+                game.Recorder.PutDirection(dir, fire2pflag);
             }
 
             return dir;
