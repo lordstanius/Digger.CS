@@ -18,9 +18,8 @@ namespace Digger
 
         public bool isPlaying;
         public bool saveDrf;
-        public bool gotName;
         public bool gotGame;
-        public bool isDrfValid;
+        public bool isRecordStarted;
         public bool kludge;
 
         private int recordCharCount;
@@ -29,7 +28,6 @@ namespace Digger
         private char recd, rld;
 
         private string playBuffer;
-        private string recordName;
         private StringBuilder recordingBuffer = new StringBuilder(1024 * 1024);
         private readonly int A_minus_a = 'A' - 'a';
 
@@ -136,7 +134,7 @@ namespace Digger
             }
 
             isPlaying = true;
-            StartRecording();
+            //StartRecording();
             //game.Run();
 
             // restore current values
@@ -146,6 +144,7 @@ namespace Digger
             //game.startingLevel = origstartlev;
             //game.diggerCount = origdiggers;
             //game.playerCount = orignplayers;
+            game.start = true;
         }
 
         public void MakeDirection(ref int dir, ref bool fire, char d)
@@ -262,7 +261,7 @@ namespace Digger
         public void StartRecording()
         {
             recordingBuffer.Clear();
-            isDrfValid = true;
+            isRecordStarted = true;
 
             recordingBuffer.AppendLine("DRF"); /* Required at start of DRF */
             if (kludge)
@@ -313,55 +312,38 @@ namespace Digger
 
         public void SaveRecordFile(string fileName)
         {
-            if (!isDrfValid)
+            if (!isRecordStarted)
                 return;
 
-            FileStream recf = null;
-            try
+            if (!Path.HasExtension(fileName))
+                fileName += REC_FILE_EXT;
+
+            using (var recf = File.OpenWrite(fileName))
             {
-                if (gotName)
-                {
-                    try { recf = File.OpenWrite(recordName); }
-                    catch { gotName = false; }
-                }
-
-                if (!gotName)
-                {
-                    if (game.playerCount == 2)
-                        recf = File.OpenWrite(REC_FILE_NAME); /* Should get a name, really */
-                    else
-                    {
-                        char[] initials = new char[4];
-                        //for (int j = 0; j < 3; j++)
-                        //{
-                        //    initials[j] = game.Scores.scores[0][j];
-                        //    if (!((initials[j] >= 'A' && initials[j] <= 'Z') ||
-                        //          (initials[j] >= 'a' && initials[j] <= 'z')))
-                        //        initials[j] = '_';
-                        //}
-
-                        //string fileName;
-                        //if (game.Scores.scoret < 100000)
-                        //    fileName = string.Format("{0}{1}{2}", initials[0], game.scores.scoret, REC_FILE_EXT);
-                        //else if (initials[2] == '_')
-                        //    fileName = string.Format("{0}{1}{2}{3}", initials[0], initials[1], game.scores.scoret, REC_FILE_EXT);
-                        //else if (initials[0] == '_')
-                        //    fileName = string.Format("{0}{1}{2}{3}", initials[1], initials[2], game.scores.scoret, REC_FILE_EXT);
-                        //else
-                        //    fileName = string.Format("{0}{1}{2}{3}", initials[0], initials[2], game.scores.scoret, REC_FILE_EXT);
-
-                        //recf = File.OpenWrite(fileName);
-                    }
-                }
-
                 byte[] recordedBytes = Encoding.ASCII.GetBytes(recordingBuffer.ToString());
                 recf.Write(recordedBytes, 0, recordingBuffer.Length);
             }
-            finally
+        }
+
+        public string GetDefaultFileName()
+        {
+            char[] initials = "___".ToCharArray();
+            if (game.Scores.scoreinit[0] == null)
             {
-                if (recf != null)
-                    recf.Close();
+                initials = "rec".ToCharArray();
             }
+            else
+            {
+                for (int j = 0; j < initials.Length; j++)
+                {
+                    initials[j] = game.Scores.scoreinit[0][j];
+                    if (!((initials[j] >= 'A' && initials[j] <= 'Z') ||
+                          (initials[j] >= 'a' && initials[j] <= 'z')))
+                        initials[j] = '_';
+                }
+            }
+
+            return string.Format("{0}{1}{2}", new String(initials), game.Scores.scoret, REC_FILE_EXT);
         }
 
         public void PlaySkipEOL()
@@ -409,15 +391,6 @@ namespace Digger
         public void PutEndOfGame()
         {
             recordingBuffer.Append("EOG\n");
-        }
-
-        public void SetRecordName(string name)
-        {
-            gotName = true;
-            if (!Path.HasExtension(name))
-                name += REC_FILE_EXT;
-
-            recordName = name;
         }
     }
 }

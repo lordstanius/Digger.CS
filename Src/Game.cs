@@ -64,6 +64,9 @@ namespace Digger
 
         public int Level => gamedat[curplayer].level;
 
+        public Action<bool> SetRecordSave { get; internal set; }
+        public Action<bool> SetRecordPlay { get; internal set; }
+
         public int ReverseDir(int dir)
         {
             switch (dir)
@@ -177,6 +180,7 @@ namespace Digger
             Video.Init();
             Scores.LoadScores();
             Sound.initsound();
+            SetRecordSave?.Invoke(false);
 
             playerCount = 1;
             do
@@ -290,6 +294,10 @@ namespace Digger
                         frame = 0;
                 }
 
+                if (Input.escape)
+                    break;
+
+
                 gamedat[0].level = 1;
                 gamedat[0].lives = 3;
                 if (playerCount == 2)
@@ -299,6 +307,11 @@ namespace Digger
                 }
                 else
                     gamedat[1].lives = 0;
+
+                if (!Recorder.isPlaying)
+                    Recorder.StartRecording();
+                else
+                    Recorder.isRecordStarted = false;
 
                 Video.Clear();
                 curplayer = 0;
@@ -311,11 +324,8 @@ namespace Digger
                     flashplayer = true;
                 curplayer = 0;
 
-                if (Input.escape)
-                    break;
-
-                //if (recording)
-                //    Recording.recputinit();
+                SetRecordPlay?.Invoke(false);
+                SetRecordSave?.Invoke(false);
                 while ((gamedat[0].lives != 0 || gamedat[1].lives != 0) && !Input.escape)
                 {
                     gamedat[curplayer].dead = false;
@@ -331,15 +341,11 @@ namespace Digger
                     }
                 }
                 Input.escape = false;
+                SetRecordPlay?.Invoke(true);
+                SetRecordSave?.Invoke(Recorder.isRecordStarted);
             } while (true);
 
             Exit();
-        }
-
-        public void PlayRecordFile(string fileName)
-        {
-            Recorder.OpenPlay(fileName);
-            start = true;
         }
 
         private void Play()
@@ -350,7 +356,8 @@ namespace Digger
             else
                 randv = Timer.Time;
 
-            Recorder.PutRandom(randv);
+            if (Recorder.isRecordStarted)
+                Recorder.PutRandom(randv);
 
             if (levnotdrawn)
             {
@@ -418,8 +425,6 @@ namespace Digger
                 Digger.DoDigger();
                 Monster.DoMonsters();
                 if (penalty < 8)
-                    /*    for (t=(8-penalty)*5;t>0;t--)
-                                olddelay(1); */
                     t = 0;
                 NewFrame();
             }
@@ -430,11 +435,20 @@ namespace Digger
             Drawing.SaveField();
             Monster.EraseMonsters();
 
-            //Recording.PutEndOfLevel();
+            Recorder.PutEndOfLevel();
             if (Recorder.isPlaying)
                 Recorder.PlaySkipEOL();
 
-            NewFrame();
+            if (Input.escape)
+            {
+                Recorder.PutEndOfGame();
+                if (Recorder.isPlaying)
+                {
+                    Recorder.isPlaying = false;
+                    start = false;
+                }
+            }
+
             if (gamedat[curplayer].levdone)
                 Sound.soundlevdone();
 
@@ -450,7 +464,14 @@ namespace Digger
                 gamedat[curplayer].lives--;
                 Drawing.DrawLives();
                 if (gamedat[curplayer].lives == 0 && !Input.escape)
-                    Scores.EndOfGame();
+                {
+                    if (Recorder.isPlaying)
+                        Recorder.isPlaying = false;
+                    else
+                        Scores.EndOfGame();
+
+                    start = false;
+                }
             }
             if (gamedat[curplayer].levdone)
             {

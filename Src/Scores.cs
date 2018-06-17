@@ -12,9 +12,9 @@ namespace Digger
 
         public int bonusscore = 20000;
         public int scoret = 0;
+        public readonly string[] scoreinit = new string[11];
 
         private readonly int[] scorehigh = new int[12];
-        private readonly string[] scoreinit = new string[11];
         private readonly byte[] scorebuf = new byte[512];
         private int score1 = 0, score2 = 0, nextbs1 = 0, nextbs2 = 0;
         private bool gotinitflag = false;
@@ -97,7 +97,6 @@ namespace Digger
                 GetInitials();
                 ShuffleHigh();
                 SaveScores();
-                game.start = false;
             }
             else
             {

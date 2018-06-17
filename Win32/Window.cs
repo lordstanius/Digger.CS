@@ -11,6 +11,8 @@ namespace Digger.Win32
         private readonly Color[] ipalette = { Color.Black, Color.Black, Color.Black, Color.Black };
         private readonly Color[][] palettes;
 
+        private const string FILTER = "Recorded game files|*.drf";
+
         public Window(Game game)
         {
             ClientSize = new Size(320, 200);
@@ -25,29 +27,37 @@ namespace Digger.Win32
             Menu = new MainMenu();
             var mitGame = new MenuItem("&Game");
             var mitPlayRecordedGame = new MenuItem("&Record playback...", (_, __) => PlayRecordedGame(game));
-            //var mitSaveRecordedGame = new MenuItem("&Save record...", (_, __) => SaveRecordedGame(game));
+            var mitSaveRecordedGame = new MenuItem("&Save record...", (_, __) => SaveRecordedGame(game));
             var mitExit = new MenuItem("E&xit", (_, __) => Close());
             mitGame.MenuItems.Add(mitPlayRecordedGame);
+            mitGame.MenuItems.Add(mitSaveRecordedGame);
             mitGame.MenuItems.Add("-");
             mitGame.MenuItems.Add(mitExit);
             Menu.MenuItems.Add(mitGame);
 
             KeyUp += (_, e) => game.KeyUp(e.KeyValue);
             KeyDown += (_, e) => game.KeyDown(e.KeyValue);
+
+            game.SetRecordSave = (value) => mitSaveRecordedGame.Enabled = value;
+            game.SetRecordPlay = (value) => mitPlayRecordedGame.Enabled = value;
         }
 
         private void PlayRecordedGame(Game game)
         {
-            var dlg = new OpenFileDialog { Filter = "Recorded game files|*.drf", };
-            if (dlg.ShowDialog() != DialogResult.OK)
-                return;
-
-            game.PlayRecordFile(dlg.FileName);
+            var dlg = new OpenFileDialog { Filter = FILTER, };
+            if (dlg.ShowDialog() == DialogResult.OK)
+                game.Recorder.OpenPlay(dlg.FileName);
         }
 
         private void SaveRecordedGame(Game game)
         {
-            throw new NotImplementedException();
+            var dlg = new SaveFileDialog
+            {
+                FileName = game.Recorder.GetDefaultFileName(),
+                Filter = FILTER
+            };
+            if (dlg.ShowDialog() == DialogResult.OK)
+                game.Recorder.SaveRecordFile(dlg.FileName);
         }
 
         public void InitVideo(byte[] pixels, byte[][] npal, byte[][] ipal)
