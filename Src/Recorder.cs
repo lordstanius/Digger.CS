@@ -17,8 +17,6 @@ namespace Digger
         private const string REC_FILE_EXT = ".drf";
 
         public bool isPlaying;
-        public bool saveDrf;
-        public bool gotGame;
         public bool isRecordStarted;
         public bool kludge;
 
@@ -134,8 +132,6 @@ namespace Digger
             }
 
             isPlaying = true;
-            //StartRecording();
-            //game.Run();
 
             // restore current values
             //game.isGauntletMode = origg;

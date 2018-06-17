@@ -297,7 +297,6 @@ namespace Digger
                 if (Input.escape)
                     break;
 
-
                 gamedat[0].level = 1;
                 gamedat[0].lives = 3;
                 if (playerCount == 2)
