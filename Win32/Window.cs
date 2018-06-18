@@ -11,11 +11,12 @@ namespace Digger.Win32
         private readonly Color[] ipalette = { Color.Black, Color.Black, Color.Black, Color.Black };
         private readonly Color[][] palettes;
 
-        private const string FILTER = "Recorded game files|*.drf";
+        private const string FilterStr = "Recorded game files|*.drf";
+        private const int ScaleFactor = 2;
 
         public Window(Game game)
         {
-            ClientSize = new Size(320, 200);
+            ClientSize = new Size(320 * ScaleFactor, 200 * ScaleFactor);
             Text = "Digger";
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -44,7 +45,7 @@ namespace Digger.Win32
 
         private void PlayRecordedGame(Game game)
         {
-            var dlg = new OpenFileDialog { Filter = FILTER, };
+            var dlg = new OpenFileDialog { Filter = FilterStr, };
             if (dlg.ShowDialog() == DialogResult.OK)
                 game.Recorder.OpenPlay(dlg.FileName);
         }
@@ -54,7 +55,7 @@ namespace Digger.Win32
             var dlg = new SaveFileDialog
             {
                 FileName = game.Recorder.GetDefaultFileName(),
-                Filter = FILTER
+                Filter = FilterStr
             };
             if (dlg.ShowDialog() == DialogResult.OK)
                 game.Recorder.SaveRecordFile(dlg.FileName);
@@ -68,7 +69,7 @@ namespace Digger.Win32
                 ipalette[i + 1] = Color.FromArgb(0xFF, ipal[i][0], ipal[i][1], ipal[i][2]);
             }
 
-            screen = new ImageSource(Video.WIDTH, Video.HEIGHT, npalette, pixels);
+            screen = new ImageSource(Video.WIDTH, Video.HEIGHT, npalette, pixels, ScaleFactor);
         }
 
         public void Render(byte[] pixels, int intensity)
@@ -82,7 +83,7 @@ namespace Digger.Win32
         {
             base.OnPaint(e);
             if (screen != null)
-                screen.Render(e.Graphics, ClientRectangle);
+                screen.Render(e.Graphics);
         }
     }
 }
