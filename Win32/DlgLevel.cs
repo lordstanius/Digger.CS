@@ -27,6 +27,9 @@ namespace Digger.Win32
         {
             btnBrowse.Enabled = rdoCustom.Checked;
             txtPath.Enabled = rdoCustom.Checked;
+
+            if (!rdoCustom.Checked)
+                LevelFilePath = null;
         }
     }
 }

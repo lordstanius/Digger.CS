@@ -10,7 +10,7 @@ namespace Digger
         public bool isUsingLevelFile;
         public string levelFilePath;
 
-        public string[,] Data = {
+        private static readonly string[,] LevelData = {
             {"S   B     HHHHS",
             "V  CC  C  V B  ",
             "VB CC  C  V    ",
@@ -92,6 +92,8 @@ namespace Digger
             "VCCCCCV VCCCCCV",
             "HHHHHHHHHHHHHHH"}};
 
+        public string[,] Data = (string[,])LevelData.Clone();
+
         public Level(Game game)
         {
             this.game = game;
@@ -120,7 +122,7 @@ namespace Digger
             return level > 10 ? 10 : level;
         }
 
-        public void ReadLevelFile(string path)
+        public void ReadFromFile(string path)
         {
             if (!File.Exists(path))
             {
@@ -149,6 +151,13 @@ namespace Digger
 
             levelFilePath = path;
             isUsingLevelFile = true;
+        }
+
+        public void RestoreData()
+        {
+            for (int i = 0; i < LevelData.GetLength(0); ++i)
+                for (int j = 0; j < LevelData.GetLength(1); ++j)
+                    Data[i, j] = LevelData[i, j];
         }
     }
 }

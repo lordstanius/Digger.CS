@@ -30,7 +30,7 @@ namespace Digger
                     mondat[m].dir = game.ReverseDir(mondat[m].dir);
         }
 
-        public void CheckMonsterScared(int h)
+        public void CheckMonsterOnScreen(int h)
         {
             int m;
             for (m = 0; m < 6; m++)
@@ -40,8 +40,7 @@ namespace Digger
 
         public void CreateMonster()
         {
-            int i;
-            for (i = 0; i < 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 if (!mondat[i].flag)
                 {
@@ -537,8 +536,7 @@ namespace Digger
 
         public void SquashMonsters(int bag, int bits)
         {
-            int m, b;
-            for (m = 0, b = 256; m < 6; m++, b <<= 1)
+            for (int m = 0, b = 256; m < 6; m++, b <<= 1)
                 if ((bits & b) != 0)
                     if (mondat[m].y >= game.bags.BagY(bag))
                         SquashMonster(m, 1, bag);

@@ -24,16 +24,16 @@ namespace Digger
 
         public int BagBits()
         {
-            int bag, b, bags = 0;
-            for (bag = 1, b = 2; bag < 8; bag++, b <<= 1)
+            int bags = 0;
+            for (int bag = 1, b = 2; bag < 8; bag++, b <<= 1)
                 if (bagdat[bag].exist)
                     bags |= b;
+
             return bags;
         }
 
         public void BagHitGround(int bag)
         {
-            int bn, b, clbits;
             if (bagdat[bag].dir == 6 && bagdat[bag].fallh > 1)
                 bagdat[bag].gt = 1;
             else
@@ -41,9 +41,9 @@ namespace Digger
             bagdat[bag].dir = -1;
             bagdat[bag].wt = 15;
             bagdat[bag].wobbling = false;
-            clbits = game.drawing.DrawGold(bag, 0, bagdat[bag].x, bagdat[bag].y);
+            int clbits = game.drawing.DrawGold(bag, 0, bagdat[bag].x, bagdat[bag].y);
             game.IncrementPenalty();
-            for (bn = 1, b = 2; bn < 8; bn++, b <<= 1)
+            for (int bn = 1, b = 2; bn < 8; bn++, b <<= 1)
                 if ((b & clbits) != 0)
                     RemoveBag(bn);
         }
@@ -55,9 +55,8 @@ namespace Digger
 
         public void CleanupBags()
         {
-            int bpa;
             game.sound.soundfalloff();
-            for (bpa = 1; bpa < 8; bpa++)
+            for (int bpa = 1; bpa < 8; bpa++)
             {
                 if (bagdat[bpa].exist && ((bagdat[bpa].h == 7 && bagdat[bpa].v == 9) ||
                     bagdat[bpa].xr != 0 || bagdat[bpa].yr != 0 || bagdat[bpa].gt != 0 ||
@@ -124,8 +123,7 @@ namespace Digger
 
         public void DrawBags()
         {
-            int bag;
-            for (bag = 1; bag < 8; bag++)
+            for (int bag = 1; bag < 8; bag++)
             {
                 if (game.currentPlayer == 0)
                     bagdat[bag] = bagdat1[bag];
@@ -138,15 +136,12 @@ namespace Digger
 
         public int GetBagDir(int bag)
         {
-            if (bagdat[bag].exist)
-                return bagdat[bag].dir;
-            return -1;
+            return bagdat[bag].exist ? bagdat[bag].dir : -1;
         }
 
         public void GetGold(int bag)
         {
-            int clbits;
-            clbits = game.drawing.DrawGold(bag, 6, bagdat[bag].x, bagdat[bag].y);
+            int clbits = game.drawing.DrawGold(bag, 6, bagdat[bag].x, bagdat[bag].y);
             game.IncrementPenalty();
             if ((clbits & 1) != 0)
             {
@@ -156,13 +151,14 @@ namespace Digger
             }
             else
                 game.monster.MonsterGetGold();
+
             RemoveBag(bag);
         }
 
         public int GetMovingBagsCount()
         {
-            int bag, n = 0;
-            for (bag = 1; bag < 8; bag++)
+            int n = 0;
+            for (int bag = 1; bag < 8; bag++)
                 if (bagdat[bag].exist && bagdat[bag].gt < 10 &&
                     (bagdat[bag].gt != 0 || bagdat[bag].wobbling))
                     n++;
@@ -171,15 +167,16 @@ namespace Digger
 
         public void InitBags()
         {
-            int bag, x, y;
             pushcount = 0;
             goldtime = 150 - game.level.LevelOf10() * 10;
+            int bag = 1;
             for (bag = 1; bag < 8; bag++)
                 bagdat[bag].exist = false;
+
             bag = 1;
-            for (x = 0; x < 15; x++)
+            for (int x = 0; x < 15; x++)
             {
-                for (y = 0; y < 10; y++)
+                for (int y = 0; y < 10; y++)
                 {
                     if (game.level.GetChar(x, y, game.level.LevelPlan()) == 'B')
                     {
@@ -314,9 +311,8 @@ namespace Digger
 
         public bool PushBags(int dir, int bits)
         {
-            int bag, bit;
             bool push = true;
-            for (bag = 1, bit = 2; bag < 8; bag++, bit <<= 1)
+            for (int bag = 1, bit = 2; bag < 8; bag++, bit <<= 1)
                 if ((bits & bit) != 0)
                     if (!PushBag(bag, dir))
                         push = false;
@@ -415,7 +411,7 @@ namespace Digger
                       if ((game.monster.GetField(h, v + 1) & 0xfdf) == 0xfdf)
                         if (yr == 0)
                             BagHitGround(bag);
-                    game.monster.CheckMonsterScared(bagdat[bag].h);
+                    game.monster.CheckMonsterOnScreen(bagdat[bag].h);
                     break;
             }
             if (bagdat[bag].dir != -1)

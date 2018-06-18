@@ -102,7 +102,9 @@ namespace Digger.Win32
             {
                 game.startingLevel = Convert.ToInt32(dlgLevel.cbLevel.SelectedItem);
                 if (!string.IsNullOrWhiteSpace(dlgLevel.LevelFilePath))
-                    game.level.ReadLevelFile(dlgLevel.LevelFilePath);
+                    game.level.ReadFromFile(dlgLevel.LevelFilePath);
+                else
+                    game.level.RestoreData();
             }
         }
     }

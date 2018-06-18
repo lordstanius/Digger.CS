@@ -188,6 +188,7 @@ namespace Digger
             for (int i = 0; i < 16; i++)
                 if (spriteRedrawFlag[i])
                     game.video.GetImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
+
             DrawActualSprites();
         }
 
