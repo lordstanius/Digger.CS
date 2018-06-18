@@ -115,7 +115,7 @@ namespace Digger
                 if ((buf = playf.ReadLine()) == null)
                     throw new InvalidOperationException("Cannot read bonus score.");
 
-                game.Scores.bonusscore = int.Parse(buf);
+                game.scores.bonusscore = int.Parse(buf);
                 for (int n = 0; n < 8; n++)
                     for (int y = 0; y < 10; y++)
                     {
@@ -123,7 +123,7 @@ namespace Digger
                         if ((buf = playf.ReadLine()) == null)
                             throw new InvalidOperationException("Cannot read a line of the map.");
 
-                        Level.Data[n, y] = buf;
+                        game.level.Data[n, y] = buf;
                     }
 
                 /* This is the second. The line breaks here really are only so that the file
@@ -173,7 +173,7 @@ namespace Digger
             {
                 if (playBuffer[0] == 'E' || playBuffer[0] == 'e')
                 {
-                    game.Input.escape = true;
+                    game.input.escape = true;
                     return;
                 }
 
@@ -285,13 +285,13 @@ namespace Digger
             if (game.startingLevel > 1)
                 recordingBuffer.AppendFormat("I{0}", game.startingLevel);
 
-            recordingBuffer.AppendFormat("\n{0}\n", game.Scores.bonusscore);
+            recordingBuffer.AppendFormat("\n{0}\n", game.scores.bonusscore);
             for (int lvl = 0; lvl < 8; lvl++)
             {
                 for (int y = 0; y < 10; y++)
                 {
                     for (int x = 0; x < 15; x++)
-                        recordingBuffer.AppendFormat("{0}", Level.Data[lvl, y][x]);
+                        recordingBuffer.AppendFormat("{0}", game.level.Data[lvl, y][x]);
 
                     recordingBuffer.AppendLine();
                 }
@@ -321,7 +321,7 @@ namespace Digger
         public string GetDefaultFileName()
         {
             char[] initials = "___".ToCharArray();
-            if (game.Scores.scoreinit[0] == null)
+            if (game.scores.scoreinit[0] == null)
             {
                 initials = "rec".ToCharArray();
             }
@@ -329,14 +329,14 @@ namespace Digger
             {
                 for (int j = 0; j < initials.Length; j++)
                 {
-                    initials[j] = game.Scores.scoreinit[0][j];
+                    initials[j] = game.scores.scoreinit[0][j];
                     if (!((initials[j] >= 'A' && initials[j] <= 'Z') ||
                           (initials[j] >= 'a' && initials[j] <= 'z')))
                         initials[j] = '_';
                 }
             }
 
-            return string.Format("{0}{1}{2}", new String(initials), game.Scores.scoret, REC_FILE_EXT);
+            return string.Format("{0}{1}{2}", new String(initials), game.scores.scoret, REC_FILE_EXT);
         }
 
         public void PlaySkipEOL()

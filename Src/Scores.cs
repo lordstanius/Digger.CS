@@ -37,7 +37,7 @@ namespace Digger
                     if (game.GetLives(1) < 5)
                     {
                         game.AddLife(1);
-                        game.Drawing.DrawLives();
+                        game.drawing.DrawLives();
                     }
                     nextbs1 += bonusscore;
                 }
@@ -56,7 +56,7 @@ namespace Digger
                     if (game.GetLives(2) < 5)
                     {
                         game.AddLife(2);
-                        game.Drawing.DrawLives();
+                        game.drawing.DrawLives();
                     }
                     nextbs2 += bonusscore;
                 }
@@ -85,15 +85,15 @@ namespace Digger
                 scoret = score2;
             if (scoret > scorehigh[11])
             {
-                game.Video.Clear();
+                game.video.Clear();
                 DrawScores();
                 game.pldispbuf = "PLAYER ";
                 if (game.GetCurrentPlayer() == 0)
                     game.pldispbuf += "1";
                 else
                     game.pldispbuf += "2";
-                game.Drawing.TextOut(game.pldispbuf, 108, 0, 2, true);
-                game.Drawing.TextOut(" NEW HIGH SCORE ", 64, 40, 2, true);
+                game.drawing.TextOut(game.pldispbuf, 108, 0, 2, true);
+                game.drawing.TextOut(" NEW HIGH SCORE ", 64, 40, 2, true);
                 GetInitials();
                 ShuffleHigh();
                 SaveScores();
@@ -101,22 +101,22 @@ namespace Digger
             else
             {
                 game.ClearTopLine();
-                game.Drawing.TextOut("GAME OVER", 104, 0, 3, true);
-                game.Sound.killsound();
+                game.drawing.TextOut("GAME OVER", 104, 0, 3, true);
+                game.sound.killsound();
                 for (int j = 0; j < 20; j++) /* Number of times screen flashes * 2 */
                     for (int i = 0; i < 2; i++)
                     { //i<8;i++) {
-                        game.Sprite.SetRetr(true);
+                        game.sprite.SetRetr(true);
                         //		game.Pc.ginten(1);
-                        game.Sprite.SetRetr(false);
+                        game.sprite.SetRetr(false);
                         for (int z = 0; z < 111; z++) ; /* A delay loop */
                         //		game.Pc.ginten(0);
-                        game.Video.SetIntensity(1 - i & 1);
+                        game.video.SetIntensity(1 - i & 1);
                         game.NewFrame();
                     }
-                game.Sound.setupsound();
-                game.Drawing.TextOut("         ", 104, 0, 3, true);
-                game.Sprite.SetRetr(true);
+                game.sound.setupsound();
+                game.drawing.TextOut("         ", 104, 0, 3, true);
+                game.sprite.SetRetr(true);
             }
         }
 
@@ -127,25 +127,25 @@ namespace Digger
 
         public int GetInitial(int x, int y)
         {
-            game.Input.keyPressed = 0;
-            game.Video.Write(x, y, '_', 3, true);
+            game.input.keyPressed = 0;
+            game.video.Write(x, y, '_', 3, true);
             game.NewFrame();
             for (int j = 0; j < 5; j++)
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    if ((game.Input.keyPressed & 0x80) == 0 && game.Input.keyPressed != 0)
-                        return game.Input.keyPressed;
+                    if ((game.input.keyPressed & 0x80) == 0 && game.input.keyPressed != 0)
+                        return game.input.keyPressed;
                     FlashyWait(15);
                 }
 
                 for (int i = 0; i < 40; i++)
                 {
-                    if ((game.Input.keyPressed & 0x80) == 0 && game.Input.keyPressed != 0)
+                    if ((game.input.keyPressed & 0x80) == 0 && game.input.keyPressed != 0)
                     {
-                        game.Video.Write(x, y, '_', 3, true);
+                        game.video.Write(x, y, '_', 3, true);
                         game.NewFrame();
-                        return game.Input.keyPressed;
+                        return game.input.keyPressed;
                     }
                     FlashyWait(15);
                 }
@@ -156,11 +156,11 @@ namespace Digger
 
         public void GetInitials()
         {
-            game.Drawing.TextOut("ENTER YOUR", 100, 70, 3, true);
-            game.Drawing.TextOut(" INITIALS", 100, 90, 3, true);
-            game.Drawing.TextOut("_ _ _", 128, 130, 3, true);
+            game.drawing.TextOut("ENTER YOUR", 100, 70, 3, true);
+            game.drawing.TextOut(" INITIALS", 100, 90, 3, true);
+            game.drawing.TextOut("_ _ _", 128, 130, 3, true);
             scoreinit[0] = "...";
-            game.Sound.killsound();
+            game.sound.killsound();
 
             for (int j = 0, i = 0; j < 20; j++) /* Number of times screen flashes * 2 */
             {
@@ -168,7 +168,7 @@ namespace Digger
                 {
                     /* A delay loop */
                 }
-                game.Video.SetIntensity(i = 1 - i & 1);
+                game.video.SetIntensity(i = 1 - i & 1);
                 game.NewFrame();
             }
 
@@ -181,25 +181,25 @@ namespace Digger
                     k = GetInitial(i * 24 + 128, 130);
                     if (i != 0 && k == 8)
                         i--;
-                    k = game.Input.GetAsciiKey(k);
+                    k = game.input.GetAsciiKey(k);
                 }
                 if (k != 0)
                 {
-                    game.Video.Write(i * 24 + 128, 130, k, 1, true);
+                    game.video.Write(i * 24 + 128, 130, k, 1, true);
                     StringBuilder sb = new StringBuilder(scoreinit[0]);
                     sb[i] = (char)k;
                     scoreinit[0] = sb.ToString();
                 }
             }
-            game.Input.keyPressed = 0;
+            game.input.keyPressed = 0;
             game.NewFrame();
             for (int i = 0; i < 20; i++)
                 FlashyWait(15);
-            game.Sound.setupsound();
-            game.Video.Clear();
-            game.Video.SetIntensity(0);
+            game.sound.setupsound();
+            game.video.Clear();
+            game.video.SetIntensity(0);
             game.NewFrame();
-            game.Sprite.SetRetr(true);
+            game.sprite.SetRetr(true);
         }
 
         public void InitScores()
@@ -239,7 +239,7 @@ namespace Digger
 
         private void ReadScores()
         {
-            if (!Level.IsUsingLevelFile)
+            if (!game.level.isUsingLevelFile)
             {
                 if (File.Exists(SCORE_FILE_NAME))
                 {
@@ -252,7 +252,7 @@ namespace Digger
             }
             else
             {
-                using (var inFile = File.OpenRead(Level.LevelFileName))
+                using (var inFile = File.OpenRead(game.level.filePath))
                 {
                     inFile.Seek(1202, SeekOrigin.Begin);
                     if (inFile.Read(scorebuf, 0, 512) == 0)
@@ -285,7 +285,7 @@ namespace Digger
 
         private void WriteScores()
         {
-            if (!Level.IsUsingLevelFile)
+            if (!game.level.isUsingLevelFile)
             {
                 using (var inFile = File.OpenWrite(SCORE_FILE_NAME))
                 {
@@ -294,7 +294,7 @@ namespace Digger
             }
             else
             {
-                using (var inFile = File.OpenWrite(Level.LevelFileName))
+                using (var inFile = File.OpenWrite(game.level.filePath))
                 {
                     inFile.Seek(1202, SeekOrigin.Begin);
                     inFile.Write(scorebuf, 0, 512);
@@ -309,8 +309,8 @@ namespace Digger
 
         public void ScoreEatMonster()
         {
-            AddScore(game.Digger.eatmsc * 200);
-            game.Digger.eatmsc <<= 1;
+            AddScore(game.digger.eatmsc * 200);
+            game.digger.eatmsc <<= 1;
         }
 
         public void ScoreEmerald()
@@ -336,12 +336,12 @@ namespace Digger
         public void ShowTable()
         {
             int i, col;
-            game.Drawing.TextOut("HIGH SCORES", 16, 25, 3);
+            game.drawing.TextOut("HIGH SCORES", 16, 25, 3);
             col = 2;
             for (i = 1; i < 11; i++)
             {
                 string hsbuf = $"{scoreinit[i]}  {NumToString(scorehigh[i + 1])}";
-                game.Drawing.TextOut(hsbuf, 16, 31 + 13 * i, col);
+                game.drawing.TextOut(hsbuf, 16, 31 + 13 * i, col);
                 col = 1;
             }
         }
@@ -379,7 +379,7 @@ namespace Digger
             {
                 d = (int)(n % 10);
                 if (w > 1 || d > 0)
-                    game.Video.Write(xp, y, d + '0', c, false);    //true
+                    game.video.Write(xp, y, d + '0', c, false);    //true
                 n /= 10;
                 w--;
                 xp -= 12;

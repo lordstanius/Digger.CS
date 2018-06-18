@@ -135,7 +135,7 @@ namespace Digger
             spriteChar[16] = ch;
             spriteWidth[16] = wid;
             spriteHeight[16] = hei;
-            game.Video.PutImage(spriteX[16], spriteY[16], spriteChar[16], spriteWidth[16], spriteHeight[16]);
+            game.video.PutImage(spriteX[16], spriteY[16], spriteChar[16], spriteWidth[16], spriteHeight[16]);
         }
 
         public int DrawSprite(int n, int x, int y)
@@ -168,7 +168,7 @@ namespace Digger
             spriteHeight[bx] = newSpriteHeight[bx];
             spriteBorderWidth[bx] = newSpriteBorderWidth[bx];
             spriteBorderHeight[bx] = newSpriteBorderHeight[bx];
-            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
+            game.video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
             DrawActualSprites();
             return CheckBorderCollision(bx);
         }
@@ -176,7 +176,7 @@ namespace Digger
         public void EraseSprite(int n)
         {
             int bx = n & 15;
-            game.Video.PutImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx], true);
+            game.video.PutImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx], true);
             spriteEnabledFlag[bx] = false;
             ClearRedrawFlags();
             SetRedrawFlags(bx);
@@ -187,7 +187,7 @@ namespace Digger
         {
             for (int i = 0; i < 16; i++)
                 if (spriteRedrawFlag[i])
-                    game.Video.GetImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
+                    game.video.GetImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
             DrawActualSprites();
         }
 
@@ -224,7 +224,7 @@ namespace Digger
             ClearRedrawFlags();
             SetRedrawFlags(bx);
             RedrawBackgroundImages();
-            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
+            game.video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
             spriteEnabledFlag[bx] = true;
             spriteRedrawFlag[bx] = true;
             DrawActualSprites();
@@ -237,7 +237,7 @@ namespace Digger
             {
                 int j = spriteOrder[i];
                 if (spriteRedrawFlag[j])
-                    game.Video.PutImage(spriteX[j], spriteY[j], spriteChar[j], spriteWidth[j], spriteHeight[j]);
+                    game.video.PutImage(spriteX[j], spriteY[j], spriteChar[j], spriteWidth[j], spriteHeight[j]);
             }
         }
 
@@ -245,7 +245,7 @@ namespace Digger
         {
             for (int i = 0; i < 16; i++)
                 if (spriteRedrawFlag[i])
-                    game.Video.PutImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
+                    game.video.PutImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
         }
 
         public void SetRedrawFlags(int n)

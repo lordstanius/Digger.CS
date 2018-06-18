@@ -45,7 +45,7 @@ namespace Digger
         public void CreateBonus()
         {
             bonusvisible = true;
-            game.Drawing.DrawBonus(292, 18);
+            game.drawing.DrawBonus(292, 18);
         }
         
         public void DiggerDie()
@@ -54,13 +54,13 @@ namespace Digger
             switch (deathstage)
             {
                 case 1:
-                    if (game.Bags.BagY(deathbag) + 6 > y)
-                        y = game.Bags.BagY(deathbag) + 6;
-                    game.Drawing.DrawDigger(15, x, y, false);
+                    if (game.bags.BagY(deathbag) + 6 > y)
+                        y = game.bags.BagY(deathbag) + 6;
+                    game.drawing.DrawDigger(15, x, y, false);
                     game.IncrementPenalty();
-                    if (game.Bags.GetBagDir(deathbag) + 1 == 0)
+                    if (game.bags.GetBagDir(deathbag) + 1 == 0)
                     {
-                        game.Sound.soundddie();
+                        game.sound.soundddie();
                         deathtime = 5;
                         deathstage = 2;
                         deathani = 0;
@@ -74,11 +74,11 @@ namespace Digger
                         break;
                     }
                     if (deathani == 0)
-                        game.Sound.music(2);
-                    clbits = game.Drawing.DrawDigger(14 - deathani, x, y, false);
+                        game.sound.music(2);
+                    clbits = game.drawing.DrawDigger(14 - deathani, x, y, false);
                     game.IncrementPenalty();
                     if (deathani == 0 && ((clbits & 0x3f00) != 0))
-                        game.Monster.KillMonsters(clbits);
+                        game.monster.KillMonsters(clbits);
                     if (deathani < 4)
                     {
                         deathani++;
@@ -87,7 +87,7 @@ namespace Digger
                     else
                     {
                         deathstage = 4;
-                        if (game.Sound.musicflag)
+                        if (game.sound.musicflag)
                             deathtime = 60;
                         else
                             deathtime = 10;
@@ -101,13 +101,13 @@ namespace Digger
                 case 5:
                     if (deathani >= 0 && deathani <= 6)
                     {
-                        game.Drawing.DrawDigger(15, x, y - deatharc[deathani], false);
+                        game.drawing.DrawDigger(15, x, y - deatharc[deathani], false);
                         if (deathani == 6)
-                            game.Sound.musicoff();
+                            game.sound.musicoff();
                         game.IncrementPenalty();
                         deathani++;
                         if (deathani == 1)
-                            game.Sound.soundddie();
+                            game.sound.soundddie();
                         if (deathani == 7)
                         {
                             deathtime = 5;
@@ -135,7 +135,7 @@ namespace Digger
                 if (digonscr)
                     if (time != 0)
                     {
-                        game.Drawing.DrawDigger(mdir, x, y, notfiring && rechargetime == 0);
+                        game.drawing.DrawDigger(mdir, x, y, notfiring && rechargetime == 0);
                         game.IncrementPenalty();
                         time--;
                     }
@@ -153,34 +153,34 @@ namespace Digger
                         startbonustimeleft--;
                         if ((bonustimeleft & 1) != 0)
                         {
-                            game.Video.SetIntensity(0);
-                            game.Sound.soundbonus();
+                            game.video.SetIntensity(0);
+                            game.sound.soundbonus();
                         }
                         else
                         {
-                            game.Video.SetIntensity(1);
-                            game.Sound.soundbonus();
+                            game.video.SetIntensity(1);
+                            game.sound.soundbonus();
                         }
                         if (startbonustimeleft == 0)
                         {
-                            game.Sound.music(0);
-                            game.Sound.soundbonusoff();
-                            game.Video.SetIntensity(1);
+                            game.sound.music(0);
+                            game.sound.soundbonusoff();
+                            game.video.SetIntensity(1);
                         }
                     }
                 }
                 else
                 {
                     EndBonusMode();
-                    game.Sound.soundbonusoff();
-                    game.Sound.music(1);
+                    game.sound.soundbonusoff();
+                    game.sound.music(1);
                 }
             }
             if (bonusmode && !digonscr)
             {
                 EndBonusMode();
-                game.Sound.soundbonusoff();
-                game.Sound.music(1);
+                game.sound.soundbonusoff();
+                game.sound.music(1);
             }
             if (emocttime > 0)
                 emocttime--;
@@ -193,7 +193,7 @@ namespace Digger
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
                     if ((emfield[y * 15 + x] & emmask) != 0)
-                        game.Drawing.DrawEmerald(x * 20 + 12, y * 18 + 21);
+                        game.drawing.DrawEmerald(x * 20 + 12, y * 18 + 21);
         }
 
         public void DrawExplosion()
@@ -201,11 +201,11 @@ namespace Digger
             switch (expsn)
             {
                 case 1:
-                    game.Sound.soundexplode();
+                    game.sound.soundexplode();
                     goto case 3;
                 case 2:
                 case 3:
-                    game.Drawing.DrawFire(firex, firey, expsn);
+                    game.drawing.DrawFire(firex, firey, expsn);
                     game.IncrementPenalty();
                     expsn++;
                     break;
@@ -219,7 +219,7 @@ namespace Digger
         public void EndBonusMode()
         {
             bonusmode = false;
-            game.Video.SetIntensity(0);
+            game.video.SetIntensity(0);
         }
 
         public void EraseBonus()
@@ -227,13 +227,13 @@ namespace Digger
             if (bonusvisible)
             {
                 bonusvisible = false;
-                game.Sprite.EraseSprite(14);
+                game.sprite.EraseSprite(14);
             }
         }
 
         public void EraseDigger()
         {
-            game.Sprite.EraseSprite(0);
+            game.sprite.EraseSprite(0);
             diggervisible = false;
         }
 
@@ -255,12 +255,12 @@ namespace Digger
             {
                 if (r == embox[dir])
                 {
-                    game.Drawing.DrawEmerald(x * 20 + 12, y * 18 + 21);
+                    game.drawing.DrawEmerald(x * 20 + 12, y * 18 + 21);
                     game.IncrementPenalty();
                 }
                 if (r == embox[dir + 1])
                 {
-                    game.Drawing.EraseEmerald(x * 20 + 12, y * 18 + 21);
+                    game.drawing.EraseEmerald(x * 20 + 12, y * 18 + 21);
                     game.IncrementPenalty();
                     hit = true;
                     emfield[y * 15 + x] &= (byte)~emmask;
@@ -273,8 +273,8 @@ namespace Digger
         {
             bonusmode = true;
             EraseBonus();
-            game.Video.SetIntensity(1);
-            bonustimeleft = 250 - Level.LevelOf10(game.Level) * 20;
+            game.video.SetIntensity(1);
+            bonustimeleft = 250 - game.level.LevelOf10() * 20;
             startbonustimeleft = 20;
             eatmsc = 1;
         }
@@ -293,11 +293,11 @@ namespace Digger
             deathstage = 1;
             diggervisible = true;
             y = v * 18 + 18;
-            game.Sprite.MoveDrawSprite(0, x, y);
+            game.sprite.MoveDrawSprite(0, x, y);
             notfiring = true;
             emocttime = 0;
             bonusvisible = bonusmode = false;
-            game.Input.firepressed = false;
+            game.input.firepressed = false;
             expsn = 0;
             rechargetime = 0;
         }
@@ -317,7 +317,7 @@ namespace Digger
             if ((emfield[y * 15 + x + 15] & emmask) != 0)
             {
                 emfield[y * 15 + x + 15] &= (byte)~emmask;
-                game.Drawing.EraseEmerald(x * 20 + 12, (y + 1) * 18 + 21);
+                game.drawing.EraseEmerald(x * 20 + 12, (y + 1) * 18 + 21);
             }
         }
 
@@ -326,8 +326,8 @@ namespace Digger
             if (!notfiring)
             {
                 notfiring = true;
-                game.Sprite.EraseSprite(15);
-                game.Sound.soundfireoff();
+                game.sprite.EraseSprite(15);
+                game.sound.soundfireoff();
             }
         }
 
@@ -337,7 +337,7 @@ namespace Digger
             emmask = 1 << game.GetCurrentPlayer();
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
-                    if (Level.GetChar(x, y, Level.LevelPlan(game.Level)) == 'C')
+                    if (game.level.GetChar(x, y, game.level.LevelPlan()) == 'C')
                         emfield[y * 15 + x] |= (byte)emmask;
                     else
                         emfield[y * 15 + x] &= (byte)~emmask;
@@ -347,8 +347,8 @@ namespace Digger
         {
             int dir, ddir, clbits, diggerox, diggeroy, nmon;
             bool push = true;
-            game.Input.ReadDirection();
-            dir = game.Input.GetDirection(0);
+            game.input.ReadDirection();
+            dir = game.input.GetDirection(0);
             if (dir == 0 || dir == 2 || dir == 4 || dir == 6)
                 ddir = dir;
             else
@@ -367,64 +367,64 @@ namespace Digger
             diggerox = x;
             diggeroy = y;
             if (mdir != -1)
-                game.Drawing.EatField(diggerox, diggeroy, mdir);
+                game.drawing.EatField(diggerox, diggeroy, mdir);
             switch (mdir)
             {
                 case 0:
-                    game.Drawing.DrawRightBlob(x, y);
+                    game.drawing.DrawRightBlob(x, y);
                     x += 4;
                     break;
                 case 4:
-                    game.Drawing.DrawLeftBlob(x, y);
+                    game.drawing.DrawLeftBlob(x, y);
                     x -= 4;
                     break;
                 case 2:
-                    game.Drawing.DrawTopBlob(x, y);
+                    game.drawing.DrawTopBlob(x, y);
                     y -= 3;
                     break;
                 case 6:
-                    game.Drawing.DrawBottomBlob(x, y);
+                    game.drawing.DrawBottomBlob(x, y);
                     y += 3;
                     break;
             }
 
             if (IsEmeraldHit((x - 12) / 20, (y - 18) / 18, (x - 12) % 20, (y - 18) % 18, mdir))
             {
-                game.Scores.ScoreEmerald();
-                game.Sound.soundem();
-                game.Sound.soundemerald(emocttime);
+                game.scores.ScoreEmerald();
+                game.sound.soundem();
+                game.sound.soundemerald(emocttime);
                 emocttime = 9;
             }
-            clbits = game.Drawing.DrawDigger(this.dir, x, y, notfiring && rechargetime == 0);
+            clbits = game.drawing.DrawDigger(this.dir, x, y, notfiring && rechargetime == 0);
             game.IncrementPenalty();
-            if ((game.Bags.BagBits() & clbits) != 0)
+            if ((game.bags.BagBits() & clbits) != 0)
             {
                 if (mdir == 0 || mdir == 4)
                 {
-                    push = game.Bags.PushBags(mdir, clbits);
+                    push = game.bags.PushBags(mdir, clbits);
                     time++;
                 }
                 else
-                if (!game.Bags.PushUpdatedBags(clbits))
+                if (!game.bags.PushUpdatedBags(clbits))
                     push = false;
                 if (!push)
                 { /* Strange, push not completely defined */
                     x = diggerox;
                     y = diggeroy;
-                    game.Drawing.DrawDigger(mdir, x, y, notfiring && rechargetime == 0);
+                    game.drawing.DrawDigger(mdir, x, y, notfiring && rechargetime == 0);
                     game.IncrementPenalty();
                     this.dir = game.ReverseDir(mdir);
                 }
             }
             if (((clbits & 0x3f00) != 0) && bonusmode)
-                for (nmon = game.Monster.KillMonsters(clbits); nmon != 0; nmon--)
+                for (nmon = game.monster.KillMonsters(clbits); nmon != 0; nmon--)
                 {
-                    game.Sound.soundeatm();
-                    game.Scores.ScoreEatMonster();
+                    game.sound.soundeatm();
+                    game.scores.ScoreEatMonster();
                 }
             if ((clbits & 0x4000) != 0)
             {
-                game.Scores.ScoreBonus();
+                game.scores.ScoreBonus();
                 InitBonusMode();
             }
             h = (x - 12) / 20;
@@ -441,10 +441,10 @@ namespace Digger
                 if (rechargetime != 0)
                     rechargetime--;
                 else
-                if (game.Input.firepflag)
+                if (game.input.firepflag)
                     if (digonscr)
                     {
-                        rechargetime = Level.LevelOf10(game.Level) * 3 + 60;
+                        rechargetime = game.level.LevelOf10() * 3 + 60;
                         notfiring = false;
                         switch (dir)
                         {
@@ -466,8 +466,8 @@ namespace Digger
                                 break;
                         }
                         firedir = dir;
-                        game.Sprite.MoveDrawSprite(15, firex, firey);
-                        game.Sound.soundfire();
+                        game.sprite.MoveDrawSprite(15, firex, firey);
+                        game.sound.soundfire();
                     }
             }
             else
@@ -476,35 +476,35 @@ namespace Digger
                 {
                     case 0:
                         firex += 8;
-                        pix = game.Video.GetPixel(firex, firey + 4) | game.Video.GetPixel(firex + 4, firey + 4);
+                        pix = game.video.GetPixel(firex, firey + 4) | game.video.GetPixel(firex + 4, firey + 4);
                         break;
                     case 4:
                         firex -= 8;
-                        pix = game.Video.GetPixel(firex, firey + 4) | game.Video.GetPixel(firex + 4, firey + 4);
+                        pix = game.video.GetPixel(firex, firey + 4) | game.video.GetPixel(firex + 4, firey + 4);
                         break;
                     case 2:
                         firey -= 7;
-                        pix = (game.Video.GetPixel(firex + 4, firey) | game.Video.GetPixel(firex + 4, firey + 1) |
-                                game.Video.GetPixel(firex + 4, firey + 2) | game.Video.GetPixel(firex + 4, firey + 3) |
-                                game.Video.GetPixel(firex + 4, firey + 4) | game.Video.GetPixel(firex + 4, firey + 5) |
-                                game.Video.GetPixel(firex + 4, firey + 6)) & 0xc0;
+                        pix = (game.video.GetPixel(firex + 4, firey) | game.video.GetPixel(firex + 4, firey + 1) |
+                                game.video.GetPixel(firex + 4, firey + 2) | game.video.GetPixel(firex + 4, firey + 3) |
+                                game.video.GetPixel(firex + 4, firey + 4) | game.video.GetPixel(firex + 4, firey + 5) |
+                                game.video.GetPixel(firex + 4, firey + 6)) & 0xc0;
                         break;
                     case 6:
                         firey += 7;
-                        pix = (game.Video.GetPixel(firex, firey) | game.Video.GetPixel(firex, firey + 1) |
-                                game.Video.GetPixel(firex, firey + 2) | game.Video.GetPixel(firex, firey + 3) |
-                                game.Video.GetPixel(firex, firey + 4) | game.Video.GetPixel(firex, firey + 5) |
-                                game.Video.GetPixel(firex, firey + 6)) & 3;
+                        pix = (game.video.GetPixel(firex, firey) | game.video.GetPixel(firex, firey + 1) |
+                                game.video.GetPixel(firex, firey + 2) | game.video.GetPixel(firex, firey + 3) |
+                                game.video.GetPixel(firex, firey + 4) | game.video.GetPixel(firex, firey + 5) |
+                                game.video.GetPixel(firex, firey + 6)) & 3;
                         break;
                 }
-                clbits = game.Drawing.DrawFire(firex, firey, 0);
+                clbits = game.drawing.DrawFire(firex, firey, 0);
                 game.IncrementPenalty();
                 if ((clbits & 0x3f00) != 0)
                     for (mon = 0, b = 256; mon < 6; mon++, b <<= 1)
                         if ((clbits & b) != 0)
                         {
-                            game.Monster.KillMonster(mon);
-                            game.Scores.ScoreKill();
+                            game.monster.KillMonster(mon);
+                            game.scores.ScoreKill();
                             expsn = 1;
                         }
                 if ((clbits & 0x40fe) != 0)
@@ -518,7 +518,7 @@ namespace Digger
                         {
                             expsn = 1;
                             firex -= 8;
-                            game.Drawing.DrawFire(firex, firey, 0);
+                            game.drawing.DrawFire(firex, firey, 0);
                         }
                         break;
                     case 4:
@@ -528,7 +528,7 @@ namespace Digger
                         {
                             expsn = 1;
                             firex += 8;
-                            game.Drawing.DrawFire(firex, firey, 0);
+                            game.drawing.DrawFire(firex, firey, 0);
                         }
                         break;
                     case 2:
@@ -538,7 +538,7 @@ namespace Digger
                         {
                             expsn = 1;
                             firey += 7;
-                            game.Drawing.DrawFire(firex, firey, 0);
+                            game.drawing.DrawFire(firex, firey, 0);
                         }
                         break;
                     case 6:
@@ -548,7 +548,7 @@ namespace Digger
                         {
                             expsn = 1;
                             firey -= 7;
-                            game.Drawing.DrawFire(firex, firey, 0);
+                            game.drawing.DrawFire(firex, firey, 0);
                         }
                         break;
                 }

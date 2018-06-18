@@ -14,6 +14,8 @@ namespace Digger.Win32
         private const string FilterStr = "Recorded game files|*.drf";
         private const int ScaleFactor = 2;
 
+        private readonly Game game;
+
         public Window(Game game)
         {
             ClientSize = new Size(320 * ScaleFactor, 200 * ScaleFactor);
@@ -21,44 +23,30 @@ namespace Digger.Win32
             Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             DoubleBuffered = true;
-            game.Video.Render = Render;
-            game.Video.InitVideo = InitVideo;
+            this.game = game;
+            game.video.Render = Render;
+            game.video.InitVideo = InitVideo;
             palettes = new Color[][] { npalette, ipalette };
 
             Menu = new MainMenu();
-            var mitGame = new MenuItem("&Game");
-            var mitPlayRecordedGame = new MenuItem("&Record playback...", (_, __) => PlayRecordedGame(game));
-            var mitSaveRecordedGame = new MenuItem("&Save record...", (_, __) => SaveRecordedGame(game));
-            var mitExit = new MenuItem("E&xit", (_, __) => Close());
-            mitGame.MenuItems.Add(mitPlayRecordedGame);
-            mitGame.MenuItems.Add(mitSaveRecordedGame);
-            mitGame.MenuItems.Add("-");
-            mitGame.MenuItems.Add(mitExit);
-            Menu.MenuItems.Add(mitGame);
+            var miGame = new MenuItem("Game");
+            var miLevel = new MenuItem("game.level...", LoadLevel);
+            var miPlayRecordedGame = new MenuItem("Record playback...", PlayRecordedGame);
+            var miSaveRecordedGame = new MenuItem("Save record...", SaveRecordedGame);
+            var miExit = new MenuItem("Exit", (_, __) => Close());
+            //miGame.MenuItems.Add(miLevel);
+            //miGame.MenuItems.Add("-");
+            miGame.MenuItems.Add(miPlayRecordedGame);
+            miGame.MenuItems.Add(miSaveRecordedGame);
+            miGame.MenuItems.Add("-");
+            miGame.MenuItems.Add(miExit);
+            Menu.MenuItems.Add(miGame);
 
             KeyUp += (_, e) => game.KeyUp(e.KeyValue);
             KeyDown += (_, e) => game.KeyDown(e.KeyValue);
 
-            game.SetRecordSave = (value) => mitSaveRecordedGame.Enabled = value;
-            game.SetRecordPlay = (value) => mitPlayRecordedGame.Enabled = value;
-        }
-
-        private void PlayRecordedGame(Game game)
-        {
-            var dlg = new OpenFileDialog { Filter = FilterStr, };
-            if (dlg.ShowDialog() == DialogResult.OK)
-                game.Recorder.OpenPlay(dlg.FileName);
-        }
-
-        private void SaveRecordedGame(Game game)
-        {
-            var dlg = new SaveFileDialog
-            {
-                FileName = game.Recorder.GetDefaultFileName(),
-                Filter = FilterStr
-            };
-            if (dlg.ShowDialog() == DialogResult.OK)
-                game.Recorder.SaveRecordFile(dlg.FileName);
+            game.SetRecordSave = (value) => miSaveRecordedGame.Enabled = value;
+            game.SetRecordPlay = (value) => miPlayRecordedGame.Enabled = value;
         }
 
         public void InitVideo(byte[] pixels, byte[][] npal, byte[][] ipal)
@@ -84,6 +72,35 @@ namespace Digger.Win32
             base.OnPaint(e);
             if (screen != null)
                 screen.Render(e.Graphics);
+        }
+
+        private void PlayRecordedGame(object sender, EventArgs e)
+        {
+            var dlg = new OpenFileDialog { Filter = FilterStr, };
+            if (dlg.ShowDialog() == DialogResult.OK)
+                game.recorder.OpenPlay(dlg.FileName);
+        }
+
+        private void SaveRecordedGame(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog
+            {
+                FileName = game.recorder.GetDefaultFileName(),
+                Filter = FilterStr
+            };
+            if (dlg.ShowDialog() == DialogResult.OK)
+                game.recorder.SaveRecordFile(dlg.FileName);
+        }
+
+        private void LoadLevel(object sender, EventArgs e)
+        {
+            var dlg = new DlgLevel { Owner = this };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                game.startingLevel = Convert.ToInt32(dlg.cbLevel.SelectedItem);
+                game.level.isUsingLevelFile = dlg.rdoCustom.Checked;
+                game.level.filePath = dlg.LevelFilePath;
+            }
         }
     }
 }

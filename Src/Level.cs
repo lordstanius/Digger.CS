@@ -1,11 +1,13 @@
 ﻿namespace Digger
 {
-    public static class Level
+    public class Level
     {
-        public static string LevelFileName;
-        public static bool IsUsingLevelFile;
+        private readonly Game game;
 
-        public static string[,] Data = {
+        public string filePath;
+        public bool isUsingLevelFile;
+
+        public string[,] Data = {
             {"S   B     HHHHS",
             "V  CC  C  V B  ",
             "VB CC  C  V    ",
@@ -87,7 +89,12 @@
             "VCCCCCV VCCCCCV",
             "HHHHHHHHHHHHHHH"}};
 
-        public static int GetChar(int x, int y, int l)
+        public Level(Game game)
+        {
+            this.game = game;
+        }
+
+        public int GetChar(int x, int y, int l)
         {
             if (l == 0)
                 l++;
@@ -95,16 +102,18 @@
             return Data[l - 1, y][x];
         }
 
-        public static int LevelPlan(int l)
+        public int LevelPlan()
         {
+            int l = game.Level;
             if (l > 8)
                 return (l & 3) + 5; /* Level plan: 12345678, 678, (5678) 247 times, 5 forever */
 
             return l;
         }
 
-        public static int LevelOf10(int level)
+        public int LevelOf10()
         {
+            int level = game.Level;
             return level > 10 ? 10 : level;
         }
     }

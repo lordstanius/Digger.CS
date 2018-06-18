@@ -61,7 +61,7 @@ namespace Digger
                     nextmonster++;
                     nextmontime = mongaptime;
                     mondat[i].stime = 5;
-                    game.Sprite.MoveDrawSprite(i + 8, mondat[i].x, mondat[i].y);
+                    game.sprite.MoveDrawSprite(i + 8, mondat[i].x, mondat[i].y);
                     break;
                 }
             }
@@ -74,15 +74,15 @@ namespace Digger
                 nextmontime--;
             else
             {
-                if (nextmonster < totalmonsters && MonstersOnScreenCount() < maxmononscr && game.Digger.digonscr && !game.Digger.bonusmode)
+                if (nextmonster < totalmonsters && MonstersOnScreenCount() < maxmononscr && game.digger.digonscr && !game.digger.bonusmode)
                     CreateMonster();
 
                 if (unbonusflag && nextmonster == totalmonsters && nextmontime == 0)
                 {
-                    if (game.Digger.digonscr)
+                    if (game.digger.digonscr)
                     {
                         unbonusflag = false;
-                        game.Digger.CreateBonus();
+                        game.digger.CreateBonus();
                     }
                 }
             }
@@ -90,7 +90,7 @@ namespace Digger
             {
                 if (mondat[i].flag)
                 {
-                    if (mondat[i].hnt > 10 - Level.LevelOf10(game.Level))
+                    if (mondat[i].hnt > 10 - game.level.LevelOf10())
                     {
                         if (mondat[i].nob)
                         {
@@ -102,7 +102,7 @@ namespace Digger
                         if (mondat[i].t == 0)
                         {
                             MonsterAI(i);
-                            if (game.RandNo(15 - Level.LevelOf10(game.Level)) == 0 && mondat[i].nob)
+                            if (game.RandNo(15 - game.level.LevelOf10()) == 0 && mondat[i].nob)
                                 MonsterAI(i);
                         }
                         else
@@ -118,7 +118,7 @@ namespace Digger
             int i;
             for (i = 0; i < 6; i++)
                 if (mondat[i].flag)
-                    game.Sprite.EraseSprite(i + 8);
+                    game.sprite.EraseSprite(i + 8);
         }
 
         public bool ClearField(int dir, int x, int y)
@@ -155,7 +155,7 @@ namespace Digger
 
         public int GetField(int x, int y)
         {
-            return game.Drawing.field[y * 15 + x];
+            return game.drawing.field[y * 15 + x];
         }
 
         public void IncreaseMonsterTime(int n)
@@ -181,9 +181,9 @@ namespace Digger
             for (int i = 0; i < 6; i++)
                 mondat[i].flag = false;
             nextmonster = 0;
-            mongaptime = 45 - (Level.LevelOf10(game.Level) << 1);
-            totalmonsters = Level.LevelOf10(game.Level) + 5;
-            switch (Level.LevelOf10(game.Level))
+            mongaptime = 45 - (game.level.LevelOf10() << 1);
+            totalmonsters = game.level.LevelOf10() + 5;
+            switch (game.level.LevelOf10())
             {
                 case 1:
                     maxmononscr = 3;
@@ -211,8 +211,8 @@ namespace Digger
             if (mondat[mon].flag)
             {
                 mondat[mon].flag = mondat[mon].alive = false;
-                game.Sprite.EraseSprite(mon + 8);
-                if (game.Digger.bonusmode)
+                game.sprite.EraseSprite(mon + 8);
+                if (game.digger.bonusmode)
                     totalmonsters++;
             }
         }
@@ -243,7 +243,7 @@ namespace Digger
 
                 /* Turn hobbin back into nobbin if it's had its time */
 
-                if (mondat[mon].hnt > 30 + (Level.LevelOf10(game.Level) << 1))
+                if (mondat[mon].hnt > 30 + (game.level.LevelOf10() << 1))
                     if (!mondat[mon].nob)
                     {
                         mondat[mon].hnt = 0;
@@ -252,24 +252,24 @@ namespace Digger
 
                 /* Set up monster direction properties to chase digger */
 
-                if (Math.Abs(game.Digger.y - mondat[mon].y) > Math.Abs(game.Digger.x - mondat[mon].x))
+                if (Math.Abs(game.digger.y - mondat[mon].y) > Math.Abs(game.digger.x - mondat[mon].x))
                 {
-                    if (game.Digger.y < mondat[mon].y) { mdirp1 = 2; mdirp4 = 6; }
+                    if (game.digger.y < mondat[mon].y) { mdirp1 = 2; mdirp4 = 6; }
                     else { mdirp1 = 6; mdirp4 = 2; }
-                    if (game.Digger.x < mondat[mon].x) { mdirp2 = 4; mdirp3 = 0; }
+                    if (game.digger.x < mondat[mon].x) { mdirp2 = 4; mdirp3 = 0; }
                     else { mdirp2 = 0; mdirp3 = 4; }
                 }
                 else
                 {
-                    if (game.Digger.x < mondat[mon].x) { mdirp1 = 4; mdirp4 = 0; }
+                    if (game.digger.x < mondat[mon].x) { mdirp1 = 4; mdirp4 = 0; }
                     else { mdirp1 = 0; mdirp4 = 4; }
-                    if (game.Digger.y < mondat[mon].y) { mdirp2 = 2; mdirp3 = 6; }
+                    if (game.digger.y < mondat[mon].y) { mdirp2 = 2; mdirp3 = 6; }
                     else { mdirp2 = 6; mdirp3 = 2; }
                 }
 
                 /* In bonus mode, run away from digger */
 
-                if (game.Digger.bonusmode)
+                if (game.digger.bonusmode)
                 {
                     t = mdirp1; mdirp1 = mdirp4; mdirp4 = t;
                     t = mdirp2; mdirp2 = mdirp3; mdirp3 = t;
@@ -300,7 +300,7 @@ namespace Digger
 
                 /* Introduce a randno element on levels <6 : occasionally swap p1 and p3 */
 
-                if (game.RandNo(Level.LevelOf10(game.Level) + 5) == 1 && Level.LevelOf10(game.Level) < 6)
+                if (game.RandNo(game.level.LevelOf10() + 5) == 1 && game.level.LevelOf10() < 6)
                 {
                     t = mdirp1;
                     mdirp1 = mdirp3;
@@ -349,7 +349,7 @@ namespace Digger
             /* Hobbins digger */
 
             if (!mondat[mon].nob)
-                game.Drawing.EatField(mondat[mon].x, mondat[mon].y, mondat[mon].dir);
+                game.drawing.EatField(mondat[mon].x, mondat[mon].y, mondat[mon].dir);
 
             /* (Draw new tunnels) and move monster */
 
@@ -357,25 +357,25 @@ namespace Digger
             {
                 case 0:
                     if (!mondat[mon].nob)
-                        game.Drawing.DrawRightBlob(mondat[mon].x, mondat[mon].y);
+                        game.drawing.DrawRightBlob(mondat[mon].x, mondat[mon].y);
 
                     mondat[mon].x += 4;
                     break;
                 case 4:
                     if (!mondat[mon].nob)
-                        game.Drawing.DrawLeftBlob(mondat[mon].x, mondat[mon].y);
+                        game.drawing.DrawLeftBlob(mondat[mon].x, mondat[mon].y);
 
                     mondat[mon].x -= 4;
                     break;
                 case 2:
                     if (!mondat[mon].nob)
-                        game.Drawing.DrawTopBlob(mondat[mon].x, mondat[mon].y);
+                        game.drawing.DrawTopBlob(mondat[mon].x, mondat[mon].y);
 
                     mondat[mon].y -= 3;
                     break;
                 case 6:
                     if (!mondat[mon].nob)
-                        game.Drawing.DrawBottomBlob(mondat[mon].x, mondat[mon].y);
+                        game.drawing.DrawBottomBlob(mondat[mon].x, mondat[mon].y);
 
                     mondat[mon].y += 3;
                     break;
@@ -384,11 +384,11 @@ namespace Digger
             /* Hobbins can eat emeralds */
 
             if (!mondat[mon].nob)
-                game.Digger.IsEmeraldHit((mondat[mon].x - 12) / 20, (mondat[mon].y - 18) / 18, (mondat[mon].x - 12) % 20, (mondat[mon].y - 18) % 18, mondat[mon].dir);
+                game.digger.IsEmeraldHit((mondat[mon].x - 12) / 20, (mondat[mon].y - 18) / 18, (mondat[mon].x - 12) % 20, (mondat[mon].y - 18) % 18, mondat[mon].dir);
 
             /* If digger's gone, don't bother */
 
-            if (!game.Digger.digonscr)
+            if (!game.digger.digonscr)
             {
                 mondat[mon].x = monox;
                 mondat[mon].y = monoy;
@@ -411,7 +411,7 @@ namespace Digger
             /* Draw monster */
 
             push = true;
-            clbits = game.Drawing.DrawMonster(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
+            clbits = game.drawing.DrawMonster(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
             game.IncrementPenalty();
 
             /* Collision with another monster */
@@ -425,27 +425,27 @@ namespace Digger
 
             /* Check for collision with bag */
 
-            if ((clbits & game.Bags.BagBits()) != 0)
+            if ((clbits & game.bags.BagBits()) != 0)
             {
                 mondat[mon].t++; /* Time penalty */
                 mongotgold = false;
                 if (mondat[mon].dir == 4 || mondat[mon].dir == 0)
                 { /* Horizontal push */
-                    push = game.Bags.PushBags(mondat[mon].dir, clbits);
+                    push = game.bags.PushBags(mondat[mon].dir, clbits);
                     mondat[mon].t++; /* Time penalty */
                 }
                 else
-                  if (!game.Bags.PushUpdatedBags(clbits)) /* Vertical push */
+                  if (!game.bags.PushUpdatedBags(clbits)) /* Vertical push */
                     push = false;
                 if (mongotgold) /* No time penalty if monster eats gold */
                     mondat[mon].t = 0;
                 if (!mondat[mon].nob && mondat[mon].hnt > 1)
-                    game.Bags.RemoveBags(clbits); /* Hobbins eat bags */
+                    game.bags.RemoveBags(clbits); /* Hobbins eat bags */
             }
 
             /* Increase hobbin cross counter */
 
-            if (mondat[mon].nob && ((clbits & 0x3f00) != 0) && game.Digger.digonscr)
+            if (mondat[mon].nob && ((clbits & 0x3f00) != 0) && game.digger.digonscr)
                 mondat[mon].hnt++;
 
             /* See if bags push monster back */
@@ -454,7 +454,7 @@ namespace Digger
             {
                 mondat[mon].x = monox;
                 mondat[mon].y = monoy;
-                game.Drawing.DrawMonster(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
+                game.drawing.DrawMonster(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
                 game.IncrementPenalty();
                 if (mondat[mon].nob) /* The other way to create hobbin: stuck on h-bag */
                     mondat[mon].hnt++;
@@ -464,15 +464,15 @@ namespace Digger
 
             /* Collision with digger */
 
-            if (((clbits & 1) != 0) && game.Digger.digonscr)
-                if (game.Digger.bonusmode)
+            if (((clbits & 1) != 0) && game.digger.digonscr)
+                if (game.digger.bonusmode)
                 {
                     KillMonster(mon);
-                    game.Scores.ScoreEatMonster();
-                    game.Sound.soundeatm(); /* Collision in bonus mode */
+                    game.scores.ScoreEatMonster();
+                    game.sound.soundeatm(); /* Collision in bonus mode */
                 }
                 else
-                    game.Digger.KillDigger(3, 0); /* Kill digger */
+                    game.digger.KillDigger(3, 0); /* Kill digger */
 
             /* Update co-ordinates */
 
@@ -487,11 +487,11 @@ namespace Digger
             switch (mondat[mon].death)
             {
                 case 1:
-                    if (game.Bags.BagY(mondat[mon].bag) + 6 > mondat[mon].y)
-                        mondat[mon].y = game.Bags.BagY(mondat[mon].bag);
-                    game.Drawing.DrawMonsterDie(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
+                    if (game.bags.BagY(mondat[mon].bag) + 6 > mondat[mon].y)
+                        mondat[mon].y = game.bags.BagY(mondat[mon].bag);
+                    game.drawing.DrawMonsterDie(mon, mondat[mon].nob, mondat[mon].hdir, mondat[mon].x, mondat[mon].y);
                     game.IncrementPenalty();
-                    if (game.Bags.GetBagDir(mondat[mon].bag) == -1)
+                    if (game.bags.GetBagDir(mondat[mon].bag) == -1)
                     {
                         mondat[mon].dtime = 1;
                         mondat[mon].death = 4;
@@ -503,7 +503,7 @@ namespace Digger
                     else
                     {
                         KillMonster(mon);
-                        game.Scores.ScoreKill();
+                        game.scores.ScoreKill();
                     }
                     break;
             }
@@ -540,7 +540,7 @@ namespace Digger
             int m, b;
             for (m = 0, b = 256; m < 6; m++, b <<= 1)
                 if ((bits & b) != 0)
-                    if (mondat[m].y >= game.Bags.BagY(bag))
+                    if (mondat[m].y >= game.bags.BagY(bag))
                         SquashMonster(m, 1, bag);
         }
     }

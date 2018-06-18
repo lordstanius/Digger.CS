@@ -497,7 +497,7 @@ namespace Digger
                         break;
                     case 0x4b8:
                         emerfreq = 0x474;
-                        game.Scores.ScoreOctave();
+                        game.scores.ScoreOctave();
                         break;
                     case 0x474:
                         emerfreq = 0x8e8;
