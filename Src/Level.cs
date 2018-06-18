@@ -1,11 +1,14 @@
-﻿namespace Digger
+﻿using System.IO;
+using System.Text;
+
+namespace Digger
 {
     public class Level
     {
         private readonly Game game;
 
-        public string filePath;
         public bool isUsingLevelFile;
+        public string levelFilePath;
 
         public string[,] Data = {
             {"S   B     HHHHS",
@@ -115,6 +118,37 @@
         {
             int level = game.Level;
             return level > 10 ? 10 : level;
+        }
+
+        public void ReadLevelFile(string path)
+        {
+            if (!File.Exists(path))
+            {
+                path += ".DLF";
+                if (!File.Exists(path))
+                    throw new FileNotFoundException($"File '{path}' cannot be found.");
+            }
+
+            using (var levf = File.OpenRead(path))
+            {
+                using (var br = new BinaryReader(levf, Encoding.ASCII, true))
+                {
+                    game.scores.bonusscore = br.ReadInt32();
+                }
+
+                byte[] buff = new byte[15];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        levf.Read(buff, 0, 15);
+                        Data[i, j] = Encoding.ASCII.GetString(buff);
+                    }
+                }
+            }
+
+            levelFilePath = path;
+            isUsingLevelFile = true;
         }
     }
 }

@@ -10,8 +10,8 @@ namespace Digger
 
         private readonly Game game;
 
-        public int bonusscore = 20000;
         public int scoret = 0;
+        public int bonusscore = 20000;
         public readonly string[] scoreinit = new string[11];
 
         private readonly int[] scorehigh = new int[12];
@@ -26,7 +26,7 @@ namespace Digger
 
         public void AddScore(int score)
         {
-            if (game.GetCurrentPlayer() == 0)
+            if (game.currentPlayer == 0)
             {
                 score1 += score;
                 if (score1 > 999999)
@@ -79,7 +79,7 @@ namespace Digger
         public void EndOfGame()
         {
             AddScore(0);
-            if (game.GetCurrentPlayer() == 0)
+            if (game.currentPlayer == 0)
                 scoret = score1;
             else
                 scoret = score2;
@@ -88,7 +88,7 @@ namespace Digger
                 game.video.Clear();
                 DrawScores();
                 game.pldispbuf = "PLAYER ";
-                if (game.GetCurrentPlayer() == 0)
+                if (game.currentPlayer == 0)
                     game.pldispbuf += "1";
                 else
                     game.pldispbuf += "2";
@@ -122,7 +122,7 @@ namespace Digger
 
         public void FlashyWait(int n)
         {
-            Thread.Sleep(n * 2);
+            Thread.Sleep(n);
         }
 
         public int GetInitial(int x, int y)
@@ -164,10 +164,7 @@ namespace Digger
 
             for (int j = 0, i = 0; j < 20; j++) /* Number of times screen flashes * 2 */
             {
-                for (int z = 0; z < 111; z++)
-                {
-                    /* A delay loop */
-                }
+                FlashyWait(3);
                 game.video.SetIntensity(i = 1 - i & 1);
                 game.NewFrame();
             }
@@ -252,7 +249,7 @@ namespace Digger
             }
             else
             {
-                using (var inFile = File.OpenRead(game.level.filePath))
+                using (var inFile = File.OpenRead(game.level.levelFilePath))
                 {
                     inFile.Seek(1202, SeekOrigin.Begin);
                     if (inFile.Read(scorebuf, 0, 512) == 0)
@@ -294,7 +291,7 @@ namespace Digger
             }
             else
             {
-                using (var inFile = File.OpenWrite(game.level.filePath))
+                using (var inFile = File.OpenWrite(game.level.levelFilePath))
                 {
                     inFile.Seek(1202, SeekOrigin.Begin);
                     inFile.Write(scorebuf, 0, 512);
@@ -363,7 +360,7 @@ namespace Digger
 
         public void WriteCurrentScore(int bp6)
         {
-            if (game.GetCurrentPlayer() == 0)
+            if (game.currentPlayer == 0)
                 WriteNumber(score1, 0, 0, 6, bp6);
             else
               if (score2 < 100000)

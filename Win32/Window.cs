@@ -15,6 +15,7 @@ namespace Digger.Win32
         private const int ScaleFactor = 2;
 
         private readonly Game game;
+        private readonly DlgLevel dlgLevel = new DlgLevel();
 
         public Window(Game game)
         {
@@ -30,12 +31,12 @@ namespace Digger.Win32
 
             Menu = new MainMenu();
             var miGame = new MenuItem("Game");
-            var miLevel = new MenuItem("game.level...", LoadLevel);
+            var miLevel = new MenuItem("Level...", LoadLevel);
             var miPlayRecordedGame = new MenuItem("Record playback...", PlayRecordedGame);
             var miSaveRecordedGame = new MenuItem("Save record...", SaveRecordedGame);
             var miExit = new MenuItem("Exit", (_, __) => Close());
-            //miGame.MenuItems.Add(miLevel);
-            //miGame.MenuItems.Add("-");
+            miGame.MenuItems.Add(miLevel);
+            miGame.MenuItems.Add("-");
             miGame.MenuItems.Add(miPlayRecordedGame);
             miGame.MenuItems.Add(miSaveRecordedGame);
             miGame.MenuItems.Add("-");
@@ -47,6 +48,9 @@ namespace Digger.Win32
 
             game.SetRecordSave = (value) => miSaveRecordedGame.Enabled = value;
             game.SetRecordPlay = (value) => miPlayRecordedGame.Enabled = value;
+            game.SetLevelLoad = (value) => miLevel.Enabled = value;
+
+            dlgLevel.Owner = this;
         }
 
         public void InitVideo(byte[] pixels, byte[][] npal, byte[][] ipal)
@@ -94,12 +98,11 @@ namespace Digger.Win32
 
         private void LoadLevel(object sender, EventArgs e)
         {
-            var dlg = new DlgLevel { Owner = this };
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (dlgLevel.ShowDialog() == DialogResult.OK)
             {
-                game.startingLevel = Convert.ToInt32(dlg.cbLevel.SelectedItem);
-                game.level.isUsingLevelFile = dlg.rdoCustom.Checked;
-                game.level.filePath = dlg.LevelFilePath;
+                game.startingLevel = Convert.ToInt32(dlgLevel.cbLevel.SelectedItem);
+                if (!string.IsNullOrWhiteSpace(dlgLevel.LevelFilePath))
+                    game.level.ReadLevelFile(dlgLevel.LevelFilePath);
             }
         }
     }

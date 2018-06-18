@@ -277,7 +277,7 @@ namespace Digger
             int x, y;
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
-                    if (game.GetCurrentPlayer() == 0)
+                    if (game.currentPlayer == 0)
                         field[y * 15 + x] = field1[y * 15 + x];
                     else
                         field[y * 15 + x] = field2[y * 15 + x];
@@ -389,7 +389,7 @@ namespace Digger
                         field[y * 15 + x] &= 0xd03f;
                     if (c == 'S' || c == 'H')
                         field[y * 15 + x] &= 0xdfe0;
-                    if (game.GetCurrentPlayer() == 0)
+                    if (game.currentPlayer == 0)
                         field1[y * 15 + x] = field[y * 15 + x];
                     else
                         field2[y * 15 + x] = field[y * 15 + x];
@@ -418,7 +418,7 @@ namespace Digger
             int x, y;
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
-                    if (game.GetCurrentPlayer() == 0)
+                    if (game.currentPlayer == 0)
                         field1[y * 15 + x] = field[y * 15 + x];
                     else
                         field2[y * 15 + x] = field[y * 15 + x];

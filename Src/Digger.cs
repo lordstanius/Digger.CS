@@ -189,7 +189,7 @@ namespace Digger
         public void DrawEmeralds()
         {
             int x, y;
-            emmask = 1 << game.GetCurrentPlayer();
+            emmask = 1 << game.currentPlayer;
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
                     if ((emfield[y * 15 + x] & emmask) != 0)
@@ -334,7 +334,7 @@ namespace Digger
         public void MakeEmeraldField()
         {
             int x, y;
-            emmask = 1 << game.GetCurrentPlayer();
+            emmask = 1 << game.currentPlayer;
             for (x = 0; x < 15; x++)
                 for (y = 0; y < 10; y++)
                     if (game.level.GetChar(x, y, game.level.LevelPlan()) == 'C')

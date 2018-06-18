@@ -66,7 +66,7 @@ namespace Digger
                     bagdat[bpa].exist = false;
                     game.sprite.EraseSprite(bpa);
                 }
-                if (game.GetCurrentPlayer() == 0)
+                if (game.currentPlayer == 0)
                     bagdat1[bpa] = bagdat[bpa];
                 else
                     bagdat2[bpa] = bagdat[bpa];
@@ -127,7 +127,7 @@ namespace Digger
             int bag;
             for (bag = 1; bag < 8; bag++)
             {
-                if (game.GetCurrentPlayer() == 0)
+                if (game.currentPlayer == 0)
                     bagdat[bag] = bagdat1[bag];
                 else
                     bagdat[bag] = bagdat2[bag];
@@ -203,7 +203,7 @@ namespace Digger
                 }
             }
 
-            if (game.GetCurrentPlayer() == 0)
+            if (game.currentPlayer == 0)
                 for (int i = 1; i < 8; i++)
                     bagdat1[i] = bagdat[i];
             else

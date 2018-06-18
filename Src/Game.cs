@@ -32,7 +32,7 @@ namespace Digger
         public ITimer timer;
 
         public string pldispbuf = "";
-        public int curplayer = 0, playerCount = 0, penalty = 0;
+        public int currentPlayer = 0, playerCount = 0, penalty = 0;
         public int fps = 20;
         public int startingLevel = 1;
         public bool levnotdrawn, flashplayer, start;
@@ -57,17 +57,18 @@ namespace Digger
 
         public void InitLevel()
         {
-            gamedat[curplayer].levdone = false;
+            gamedat[currentPlayer].levdone = false;
             drawing.MakeField();
             digger.MakeEmeraldField();
             bags.InitBags();
             levnotdrawn = true;
         }
 
-        public int Level => gamedat[curplayer].level;
+        public int Level => gamedat[currentPlayer].level;
 
         public Action<bool> SetRecordSave { get; internal set; }
         public Action<bool> SetRecordPlay { get; internal set; }
+        public Action<bool> SetLevelLoad { get; internal set; }
 
         public int ReverseDir(int dir)
         {
@@ -123,7 +124,7 @@ namespace Digger
 
         public void CheckLevelDone()
         {
-            gamedat[curplayer].levdone = (digger.EmeraldCount() == 0 || monster.MonstersLeftCount() == 0) && digger.digonscr;
+            gamedat[currentPlayer].levdone = (digger.EmeraldCount() == 0 || monster.MonstersLeftCount() == 0) && digger.digonscr;
         }
 
         public void ClearTopLine()
@@ -140,11 +141,6 @@ namespace Digger
             digger.DrawEmeralds();
             digger.InitDigger();
             monster.InitMonsters();
-        }
-
-        public int GetCurrentPlayer()
-        {
-            return curplayer;
         }
 
         public int GetLives(int pl)
@@ -299,11 +295,11 @@ namespace Digger
                 if (input.escape)
                     break;
 
-                gamedat[0].level = 1;
+                gamedat[0].level = startingLevel;
                 gamedat[0].lives = 3;
                 if (playerCount == 2)
                 {
-                    gamedat[1].level = 1;
+                    gamedat[1].level = startingLevel;
                     gamedat[1].lives = 3;
                 }
                 else
@@ -314,33 +310,35 @@ namespace Digger
                     recorder.StartRecording();
 
                 video.Clear();
-                curplayer = 0;
+                currentPlayer = 0;
                 InitLevel();
-                curplayer = 1;
+                currentPlayer = 1;
                 InitLevel();
                 scores.ZeroScores();
                 digger.bonusvisible = true;
                 if (playerCount == 2)
                     flashplayer = true;
-                curplayer = 0;
 
+                SetLevelLoad?.Invoke(false);
                 SetRecordPlay?.Invoke(false);
                 SetRecordSave?.Invoke(false);
+                currentPlayer = 0;
                 while ((gamedat[0].lives != 0 || gamedat[1].lives != 0) && !input.escape)
                 {
-                    gamedat[curplayer].dead = false;
-                    while (!gamedat[curplayer].dead && gamedat[curplayer].lives != 0 && !input.escape)
+                    gamedat[currentPlayer].dead = false;
+                    while (!gamedat[currentPlayer].dead && gamedat[currentPlayer].lives != 0 && !input.escape)
                     {
                         drawing.InitMonsterSpriteBuffer();
                         Play();
                     }
-                    if (gamedat[1 - curplayer].lives != 0)
+                    if (gamedat[1 - currentPlayer].lives != 0)
                     {
-                        curplayer = 1 - curplayer;
+                        currentPlayer = 1 - currentPlayer;
                         flashplayer = levnotdrawn = true;
                     }
                 }
                 input.escape = false;
+                SetLevelLoad?.Invoke(true);
                 SetRecordPlay?.Invoke(true);
                 SetRecordSave?.Invoke(recorder.isRecording);
             } while (true);
@@ -367,7 +365,7 @@ namespace Digger
                 {
                     flashplayer = false;
                     pldispbuf = "PLAYER ";
-                    if (curplayer == 0)
+                    if (currentPlayer == 0)
                         pldispbuf += "1";
                     else
                         pldispbuf += "2";
@@ -400,7 +398,7 @@ namespace Digger
             input.ReadDirection();
             timer.Start();
 
-            while (!gamedat[curplayer].dead && !gamedat[curplayer].levdone && !input.escape)
+            while (!gamedat[currentPlayer].dead && !gamedat[currentPlayer].levdone && !input.escape)
             {
                 NewFrame();
                 penalty = 0;
@@ -449,21 +447,21 @@ namespace Digger
                 }
             }
 
-            if (gamedat[curplayer].levdone)
+            if (gamedat[currentPlayer].levdone)
                 sound.soundlevdone();
 
             if (digger.EmeraldCount() == 0)
             {
-                gamedat[curplayer].level++;
-                if (gamedat[curplayer].level > 1000)
-                    gamedat[curplayer].level = 1000;
+                gamedat[currentPlayer].level++;
+                if (gamedat[currentPlayer].level > 1000)
+                    gamedat[currentPlayer].level = 1000;
                 InitLevel();
             }
-            if (gamedat[curplayer].dead)
+            if (gamedat[currentPlayer].dead)
             {
-                gamedat[curplayer].lives--;
+                gamedat[currentPlayer].lives--;
                 drawing.DrawLives();
-                if (gamedat[curplayer].lives == 0 && !input.escape)
+                if (gamedat[currentPlayer].lives == 0 && !input.escape)
                 {
                     if (recorder.isPlaying)
                         recorder.isPlaying = false;
@@ -473,11 +471,11 @@ namespace Digger
                     start = false;
                 }
             }
-            if (gamedat[curplayer].levdone)
+            if (gamedat[currentPlayer].levdone)
             {
-                gamedat[curplayer].level++;
-                if (gamedat[curplayer].level > 1000)
-                    gamedat[curplayer].level = 1000;
+                gamedat[currentPlayer].level++;
+                if (gamedat[currentPlayer].level > 1000)
+                    gamedat[currentPlayer].level = 1000;
                 InitLevel();
             }
         }
@@ -502,7 +500,7 @@ namespace Digger
 
         public void SetDead(bool bp6)
         {
-            gamedat[curplayer].dead = bp6;
+            gamedat[currentPlayer].dead = bp6;
         }
 
         public void ShowNumOfPlayers()
