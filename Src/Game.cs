@@ -307,10 +307,9 @@ namespace Digger
                 else
                     gamedat[1].lives = 0;
 
+                Recorder.isRecording = false;
                 if (!Recorder.isPlaying)
                     Recorder.StartRecording();
-                else
-                    Recorder.isRecordStarted = false;
 
                 Video.Clear();
                 curplayer = 0;
@@ -341,7 +340,7 @@ namespace Digger
                 }
                 Input.escape = false;
                 SetRecordPlay?.Invoke(true);
-                SetRecordSave?.Invoke(Recorder.isRecordStarted);
+                SetRecordSave?.Invoke(Recorder.isRecording);
             } while (true);
 
             Exit();
@@ -355,8 +354,7 @@ namespace Digger
             else
                 randv = Timer.Time;
 
-            if (Recorder.isRecordStarted)
-                Recorder.PutRandom(randv);
+            Recorder.PutRandom(randv);
 
             if (levnotdrawn)
             {
@@ -390,6 +388,7 @@ namespace Digger
             }
             else
                 InitChars();
+
             Input.keyPressed = 0;
             Drawing.TextOut("        ", 108, 0, 3);
             Scores.InitScores();

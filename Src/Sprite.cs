@@ -13,7 +13,7 @@ namespace Digger
         private readonly int[] spriteX = new int[17];
         private readonly int[] spriteY = new int[17];
         private readonly int[] spriteWidth = new int[17];
-        private readonly int[] spriteHeigth = new int[17];
+        private readonly int[] spriteHeight = new int[17];
         private readonly int[] spriteBorderWidth = new int[16];
         private readonly int[] spriteBorderHeight = new int[16];
         private readonly int[] newSpriteChar = new int[16];
@@ -42,12 +42,12 @@ namespace Digger
 
             if (spriteY[bx] >= spriteY[si])
             {
-                if (spriteY[bx] + spriteBorderHeight[bx] <= spriteHeigth[si] + spriteY[si] - spriteBorderHeight[si] - 1)
+                if (spriteY[bx] + spriteBorderHeight[bx] <= spriteHeight[si] + spriteY[si] - spriteBorderHeight[si] - 1)
                     return true;
                 return false;
             }
 
-            if (spriteY[si] + spriteBorderHeight[si] <= spriteHeigth[bx] + spriteY[bx] - spriteBorderHeight[bx] - 1)
+            if (spriteY[si] + spriteBorderHeight[si] <= spriteHeight[bx] + spriteY[bx] - spriteBorderHeight[bx] - 1)
                 return true;
 
             return false;
@@ -106,12 +106,12 @@ namespace Digger
 
             if (spriteY[bx] >= spriteY[si])
             {
-                if (spriteY[bx] <= spriteHeigth[si] + spriteY[si] - 1)
+                if (spriteY[bx] <= spriteHeight[si] + spriteY[si] - 1)
                     return true;
                 return false;
             }
 
-            if (spriteY[si] <= spriteHeigth[bx] + spriteY[bx] - 1)
+            if (spriteY[si] <= spriteHeight[bx] + spriteY[bx] - 1)
                 return true;
 
             return false;
@@ -122,7 +122,7 @@ namespace Digger
             newSpriteChar[n & 15] = spriteChar[n & 15] = ch;
             spriteBuffer[n & 15] = mov;
             newSpriteWidth[n & 15] = spriteWidth[n & 15] = wid;
-            newSpriteHeight[n & 15] = spriteHeigth[n & 15] = hei;
+            newSpriteHeight[n & 15] = spriteHeight[n & 15] = hei;
             newSpriteBorderWidth[n & 15] = spriteBorderWidth[n & 15] = bwid;
             newSpriteBorderHeight[n & 15] = spriteBorderHeight[n & 15] = bhei;
             spriteEnabledFlag[n & 15] = false;
@@ -134,8 +134,8 @@ namespace Digger
             spriteY[16] = y;
             spriteChar[16] = ch;
             spriteWidth[16] = wid;
-            spriteHeigth[16] = hei;
-            game.Video.PutImage(spriteX[16], spriteY[16], spriteChar[16], spriteWidth[16], spriteHeigth[16]);
+            spriteHeight[16] = hei;
+            game.Video.PutImage(spriteX[16], spriteY[16], spriteChar[16], spriteWidth[16], spriteHeight[16]);
         }
 
         public int DrawSprite(int n, int x, int y)
@@ -148,14 +148,14 @@ namespace Digger
             t1 = spriteX[bx];
             t2 = spriteY[bx];
             t3 = spriteWidth[bx];
-            t4 = spriteHeigth[bx];
+            t4 = spriteHeight[bx];
             spriteX[bx] = x;
             spriteY[bx] = y;
             spriteWidth[bx] = newSpriteWidth[bx];
-            spriteHeigth[bx] = newSpriteHeight[bx];
+            spriteHeight[bx] = newSpriteHeight[bx];
             ClearRecursionFlags();
             SetRedrawFlags(bx);
-            spriteHeigth[bx] = t4;
+            spriteHeight[bx] = t4;
             spriteWidth[bx] = t3;
             spriteY[bx] = t2;
             spriteX[bx] = t1;
@@ -165,10 +165,10 @@ namespace Digger
             spriteY[bx] = y;
             spriteChar[bx] = newSpriteChar[bx];
             spriteWidth[bx] = newSpriteWidth[bx];
-            spriteHeigth[bx] = newSpriteHeight[bx];
+            spriteHeight[bx] = newSpriteHeight[bx];
             spriteBorderWidth[bx] = newSpriteBorderWidth[bx];
             spriteBorderHeight[bx] = newSpriteBorderHeight[bx];
-            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeigth[bx]);
+            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
             DrawActualSprites();
             return CheckBorderCollision(bx);
         }
@@ -176,7 +176,7 @@ namespace Digger
         public void EraseSprite(int n)
         {
             int bx = n & 15;
-            game.Video.PutImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeigth[bx], true);
+            game.Video.PutImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx], true);
             spriteEnabledFlag[bx] = false;
             ClearRedrawFlags();
             SetRedrawFlags(bx);
@@ -187,7 +187,7 @@ namespace Digger
         {
             for (int i = 0; i < 16; i++)
                 if (spriteRedrawFlag[i])
-                    game.Video.GetImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeigth[i]);
+                    game.Video.GetImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
             DrawActualSprites();
         }
 
@@ -196,7 +196,7 @@ namespace Digger
             spriteX[16] = x;
             spriteY[16] = y;
             spriteWidth[16] = wid;
-            spriteHeigth[16] = hei;
+            spriteHeight[16] = hei;
             ClearRedrawFlags();
             SetRedrawFlags(16);
             RedrawBackgroundImages();
@@ -218,13 +218,13 @@ namespace Digger
             spriteY[bx] = y;
             spriteChar[bx] = newSpriteChar[bx];
             spriteWidth[bx] = newSpriteWidth[bx];
-            spriteHeigth[bx] = newSpriteHeight[bx];
+            spriteHeight[bx] = newSpriteHeight[bx];
             spriteBorderWidth[bx] = newSpriteBorderWidth[bx];
             spriteBorderHeight[bx] = newSpriteBorderHeight[bx];
             ClearRedrawFlags();
             SetRedrawFlags(bx);
             RedrawBackgroundImages();
-            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeigth[bx]);
+            game.Video.GetImage(spriteX[bx], spriteY[bx], spriteBuffer[bx], spriteWidth[bx], spriteHeight[bx]);
             spriteEnabledFlag[bx] = true;
             spriteRedrawFlag[bx] = true;
             DrawActualSprites();
@@ -237,7 +237,7 @@ namespace Digger
             {
                 int j = spriteOrder[i];
                 if (spriteRedrawFlag[j])
-                    game.Video.PutImage(spriteX[j], spriteY[j], spriteChar[j], spriteWidth[j], spriteHeigth[j]);
+                    game.Video.PutImage(spriteX[j], spriteY[j], spriteChar[j], spriteWidth[j], spriteHeight[j]);
             }
         }
 
@@ -245,7 +245,7 @@ namespace Digger
         {
             for (int i = 0; i < 16; i++)
                 if (spriteRedrawFlag[i])
-                    game.Video.PutImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeigth[i]);
+                    game.Video.PutImage(spriteX[i], spriteY[i], spriteBuffer[i], spriteWidth[i], spriteHeight[i]);
         }
 
         public void SetRedrawFlags(int n)

@@ -17,7 +17,7 @@ namespace Digger
         private const string REC_FILE_EXT = ".drf";
 
         public bool isPlaying;
-        public bool isRecordStarted;
+        public bool isRecording;
         public bool kludge;
 
         private int recordCharCount;
@@ -257,7 +257,7 @@ namespace Digger
         public void StartRecording()
         {
             recordingBuffer.Clear();
-            isRecordStarted = true;
+            isRecording = true;
 
             recordingBuffer.AppendLine("DRF"); /* Required at start of DRF */
             if (kludge)
@@ -308,9 +308,6 @@ namespace Digger
 
         public void SaveRecordFile(string fileName)
         {
-            if (!isRecordStarted)
-                return;
-
             if (!Path.HasExtension(fileName))
                 fileName += REC_FILE_EXT;
 
